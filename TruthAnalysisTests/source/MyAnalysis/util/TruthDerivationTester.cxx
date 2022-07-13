@@ -193,6 +193,11 @@ int main(int argc, char **argv) {
   TH1D* h_xdM = new TH1D("xdM", "Dark Quark Mass; M [GeV]", 20, 5, 15);
   TH1D* h_xdDPhi = new TH1D("xdDPhi", "#Delta#phi Dark Quarks; #Delta#phi(xd,xd)", 20, 0,3.3);
 
+  TH1D* h_zpPt = new TH1D("zpPt", "Z' Pt; p_{T} [GeV]", 70, 0, 4000.);
+  TH1D* h_zpEta = new TH1D("zpEta", "Z' Eta; #eta", 50, -5., 5.);
+  TH1D* h_zpPhi = new TH1D("zpPhi", "Z' Phi; #phi", 50, -3.14, 3.14);
+  TH1D* h_zpM = new TH1D("zpM", "Z' Mass; M [GeV]", 80, 0, 8000);
+
   TH1D* h_xdxdM = new TH1D("xdxdM", "Dark Quark Invariant Mass; M_{xd,xd} [GeV]",80, 0, 8000);
   TH1D* h_nJetsMatched = new TH1D("nJetsMatched", "N jets satisfying dR(j,xd) < 0.4; nJets", 10, 0, 10);
   TH1D* h_dRxdj = new TH1D("dRxdj", "DeltaR(quark, closest jet); #Delta R", 20,0,5);
@@ -245,6 +250,7 @@ int main(int argc, char **argv) {
     CHECK_RETRIEVE( largeRJets , "AntiKt10TruthTrimmedPtFrac5SmallR20Jets" )
     CHECK_RETRIEVE( truthMET , "MET_Truth" )
     CHECK_RETRIEVE( truthBSM, "TruthBSM" )
+
     //for (size_t n=0;n<nParticleContainers;++n){
     //  CHECK_RETRIEVE( truthParticles[n] , particleKeyList[n].c_str() )
     //}
@@ -316,7 +322,7 @@ int main(int argc, char **argv) {
     //}
     std::vector<TLorentzVector> quarks;
     for (const auto * bsm: *truthBSM){
-      if ( fabs(bsm->pdgId()) == 4900101 && bsm->status() == 23){
+      if ( fabs(bsm->pdgId()) == 4900101 && bsm->status() == 71){
       /*if ( fabs(bsm->pdgId()) == 4900101){
 	std::cout << "pdgId = " << bsm->pdgId() << ", nParents = " << bsm->nParents() << ", status = " << bsm->status() << " | ";
 	for (size_t n=0; n<bsm->nParents();n++){
@@ -331,12 +337,26 @@ int main(int argc, char **argv) {
         h_xdEta->Fill( v_xd.Eta() );
         h_xdPhi->Fill( v_xd.Phi() );
         quarks.push_back(v_xd);
+      }
+      if ( bsm->pdgId() == 5000001 ){
+        TLorentzVector v_zp(0,0,0,0);
+        v_zp.SetPxPyPzE(bsm->px()*0.001, bsm->py()*0.001, bsm->pz()*0.001, bsm->e()*.001);
+	h_zpPt->Fill( v_zp.Pt() );
+	h_zpEta->Fill( v_zp.Eta() );
+	h_zpPhi->Fill( v_zp.Phi() );
+	h_zpM->Fill( v_zp.M() );
       } 
     }
     //if(quarks.size() != 2){std::cout << "No quarks found" << std::endl; continue;}
     h_xdxdM->Fill((quarks[0]+quarks[1]).M());
     h_xdDPhi->Fill(fabs(quarks[0].DeltaPhi(quarks[1])));
-    h_nSmallR->Fill(smallRJets->size());
+
+    //h_nSmallR->Fill(smallRJets->size());
+    int nSmallR = 0;
+    for (const auto * j : *smallRJets){
+      if (j->pt() > 100000 && fabs(j->eta()) < 2.5) nSmallR++;
+    }
+    h_nSmallR->Fill(nSmallR);
 
     // MET Vec
     TLorentzVector v_met(0,0,0,0);
@@ -396,7 +416,13 @@ int main(int argc, char **argv) {
     }
 
 
-    h_nLargeR->Fill(largeRJets->size());
+    //h_nLargeR->Fill(largeRJets->size());
+    int nLargeR = 0;
+    for (const auto * j : *largeRJets){
+      if (j->pt() > 150000 && fabs(j->eta()) < 2.5) nLargeR++;
+    }
+    h_nLargeR->Fill(nLargeR);
+
     for (const auto * j : *largeRJets){ // Large-R jets
       h_jetLRPt->Fill( j->pt()*0.001 );
       h_jetLREta->Fill( j->eta());
@@ -425,6 +451,11 @@ int main(int argc, char **argv) {
   h_xdM->Write();
   h_xdEta->Write();
   h_xdPhi->Write();
+
+  h_zpPt->Write();
+  h_zpM->Write();
+  h_zpEta->Write();
+  h_zpPhi->Write();
 
   h_xdxdM->Write();
   h_xdDPhi->Write();

@@ -9,6 +9,7 @@ export RUN_NUMBER=$1
 export N_EVENTS=$2
 export PWD=`pwd`
 export STREND=".root"
+export LOGEND=".log.generate"
 
 mkdir $RUN_NUMBER
 #mkdir run
@@ -22,7 +23,7 @@ echo "Contents of DSID folder: "
 ls $RUN_NUMBER
 asetup AthGeneration,21.6.96
 echo "Gen_tf.py --ecmEnergy=13000. --firstEvent=1  --maxEvents=$N_EVENTS --randomSeed=111 --jobConfig=$RUN_NUMBER --outputEVNTFile=$RUN_NUMBER$STREND"
-Gen_tf.py --ecmEnergy=13000. --firstEvent=1  --maxEvents=$N_EVENTS --randomSeed=111 --jobConfig=$RUN_NUMBER --outputEVNTFile=$RUN_NUMBER$STREND > $RUN_NUMBER/log.generate
+Gen_tf.py --ecmEnergy=13000. --firstEvent=1  --maxEvents=$N_EVENTS --randomSeed=111 --jobConfig=$RUN_NUMBER --outputEVNTFile=$RUN_NUMBER$STREND > $RUN_NUMBER/$RUN_NUMBER$LOGEND
 )
 
 #2 make the TRUTH DAOD 

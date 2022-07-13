@@ -4,6 +4,7 @@
 #include <math.h>
 
 vector<Color_t> mycolors    = { kBlue+1, kAzure+7, kGreen+3, kSpring, kRed+1, kOrange-3, kPink+10, kPink+1, kYellow, kYellow-3 };
+vector<Color_t> mycolors2   = { kBlue+1, kOrange+7, kGreen+3, kRed+1, kAzure+7, kPink+10, kYellow+1};
 vector<Color_t> rainbow    = { kRed, kOrange-3, kYellow+1, kSpring-1, kAzure, kBlue+2, kViolet};
 string save_dir = "/eos/user/e/ebusch/SVJ/Plots";
 
@@ -26,14 +27,14 @@ void Plot_Histograms(string var, vector<TH1D*> hists, vector<string> legend_name
   gStyle->SetOptStat(0);
 
   for(int i=0; i<hists.size();i++){
-    //hists[i]->SetLineColor(mycolors[i]);
-    hists[i]->SetLineColor(mycolors[i]);
+    //hists[i]->SetLineColor(rainbow[i]);
+    hists[i]->SetLineColor(mycolors2[i]);
     hists[i]->SetLineWidth(2);
     hists[i]->Scale(1./hists[i]->Integral());
     hists[i]->GetYaxis()->SetTitle("A.U.");
     if (hists[i]->GetMaximum() > max) max = hists[i]->GetMaximum();
-    leg->AddEntry(hists[i], Form("%s (%i) ",legend_names[i].c_str(), int(hists[i]->GetEntries())));
-    //leg->AddEntry(hists[i], Form("%s    ",legend_names[i].c_str()));
+    //leg->AddEntry(hists[i], Form("%s (%i) ",legend_names[i].c_str(), int(hists[i]->GetEntries())));
+    leg->AddEntry(hists[i], Form("%s  ",legend_names[i].c_str()));
   }
   for(int i=0; i<hists.size();i++){
     hists[i]->SetMaximum(max*1.2);
@@ -41,7 +42,7 @@ void Plot_Histograms(string var, vector<TH1D*> hists, vector<string> legend_name
   }
   if (var != "nSmallR" && var != "nLargeR"  && var != "nJetsMatched") canv->SetLogy();
   leg->Draw();
-  canv->SaveAs(Form("%s/%s_SR23.png", save_dir.c_str(), var.c_str()));
+  canv->SaveAs(Form("%s/%s_xJ_pt100eta25_750_2.png", save_dir.c_str(), var.c_str()));
   delete canv;
 } 
 
@@ -52,32 +53,37 @@ void myPlotter(){
 		//"JetPt", "JetEta", "JetPhi",
 		//"JetLRPt", "JetLREta", "JetLRPhi", 
 		//"MET_NonInt", 
-		//"nSmallR", "nLargeR",
+		"nSmallR", "nLargeR"
 		//"xdPt", "xdM", "xdPhi", "xdEta",
 		//"xdxdM",
 		//"xdDPhi", "jjDPhi"
-		"mjj", "mT", 
-		"dPhi_xdj_MET", "dPhi_xd_MET", "dPhi_j_MET",
-		"dRxdj", "xdj_idx", "nJetsMatched"
+		//"zpPt", "zpM", "zpPhi", "zpEta"
+		//"mjj", "mT", 
+		//"dPhi_xdj_MET", "dPhi_xd_MET", "dPhi_j_MET",
+		//"dRxdj", "xdj_idx", "nJetsMatched"
 		};
 
+
+  vector<string> input_files = {"hists_output_750_2_ej_pt25eta25.root", "hists_output_750_2_nej_pt25eta25.root"};
+  /*
   vector<string> input_files = {
-		"hists_output_750_2_SR23.root",
-		"hists_output_750_8_SR23.root",
-		//"hists_output_1500_2.root",
-		//"hists_output_2500_2.root",
-		"hists_output_3500_2_SR23.root",
-		"hists_output_3500_8_SR23.root",
+		"hists_output_750_2_LR71.root",
+		"hists_output_750_8_LR71.root",
+		//"hists_output_1500_2_zp.root",
+		//"hists_output_2500_2_zp.root",
+		"hists_output_3500_2_LR71.root",
+		"hists_output_3500_8_LR71.root",
 		//"hists_output_4000_2.root",
-		//"hists_output_4500_2.root",
+		//"hists_output_4500_2_zp.root",
 		//"hists_output_5000_2.root",
-		//"hists_output_5500_2.root",
-		"hists_output_6000_2_SR23.root",
-		"hists_output_6000_8_SR23.root"
-		//"hists_output_6500_2.root"
+		//"hists_output_5500_2_zp.root",
+		"hists_output_6000_2_LR71.root",
+		"hists_output_6000_8_LR71.root"
+		//"hists_output_6500_2_zp.root"
 		//"hists_output_7000_2.root"
 		//"hists_output_7000_8.root"
 		};
+  */
 
   vector<map<string,TH1D*>> all_hists;
   for (auto & f: input_files){
@@ -87,14 +93,15 @@ void myPlotter(){
   //map<string,TH1D*> extra_jets = GetHistograms(my_vars, "test_with_extra_jets.root");
   //map<string,TH1D*> normal_jets = GetHistograms(my_vars, "test_no_extra_jets.root");
 
-  //vector<string> legend_names = {"Extra Jets", "No Extra Jets"};
+  vector<string> legend_names = {"Extra Jets", "No Extra Jets"};
+  /*
   vector<string> legend_names = {
 		"M_{Z'}=750 GeV | r_{inv}=0.2",
 		"M_{Z'}=750 GeV | r_{inv}=0.8",
 		//"M_{Z'}=1500 GeV | r_{inv}=0.2",
 		//"M_{Z'}=1500 GeV | r_{inv}=0.8",
 		//"M_{Z'}=2500 GeV | r_{inv}=0.2",
-		//"M_{Z'}=2500 GeV | r_{inv}=0.2",
+		//"M_{Z'}=2500 GeV | r_{inv}=0.8",
 		"M_{Z'}=3500 GeV | r_{inv}=0.2",
 		"M_{Z'}=3500 GeV | r_{inv}=0.8",
 		//"M_{Z'}=4000 GeV | r_{inv}=0.2",
@@ -107,6 +114,7 @@ void myPlotter(){
 		//"M_{Z'}=7000 GeV | r_{inv}=0.2"
 		//"M_{Z'}=7000 GeV | r_{inv}=0.8"
 		};
+  */
 
   for(auto &var: my_vars){
     vector<TH1D*> plot_hists;
