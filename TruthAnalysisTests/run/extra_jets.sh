@@ -1,0 +1,12 @@
+#TruthDerivationTester --input ../../signal_generation/run/100015/DAOD_TRUTH3.output_1500_8.root --output hists_output_1500_8.root --nevents -1
+TruthDerivationTester --input ../../../signal_generation/run/100017/DAOD_TRUTH3.output_750_8.root --output hists_output_750_8_test2.root --nevents 100
+#TruthDerivationTester --input ../../signal_generation/run/100018/DAOD_TRUTH3.output_750_2.root --output hists_output_750_2.root --nevents -1
+#TruthDerivationTester --input ../../signal_generation/run/100019/DAOD_TRUTH3.output_7000_8.root --output hists_output_7000_8.root --nevents -1
+#TruthDerivationTester --input ../../signal_generation/run/100020/DAOD_TRUTH3.output_7000_2.root --output hists_output_7000_2.root --nevents -1
+#TruthDerivationTester --input ../../signal_generation/run/100021/DAOD_TRUTH3.output_3500_8.root --output hists_output_3500_8.root --nevents -1
+#TruthDerivationTester --input ../../signal_generation/run/100022/DAOD_TRUTH3.output_3500_2.root --output hists_output_3500_2.root --nevents -1
+#TruthDerivationTester --input ../../signal_generation/run/100023/DAOD_TRUTH3.output_6000_8.root --output hists_output_6000_8.root --nevents -1
+TruthDerivationTester --input ../../../signal_generation/run/100024/DAOD_TRUTH3.output_6000_2.root --output hists_output_6000_2_test2.root --nevents 100
+#TruthDerivationTester --input ../../signal_generation/run/100025/DAOD_TRUTH3.output_5000_2.root --output hists_output_5000_2.root --nevents -1
+#TruthDerivationTester --input ../../signal_generation/run/100026/DAOD_TRUTH3.output_4000_2.root --output hists_output_4000_2.root --nevents -1
+#TruthDerivationTester --input ../../signal_generation/run/100027/DAOD_TRUTH3.output_2500_2.root --output hists_output_2500_2.root --nevents -1
