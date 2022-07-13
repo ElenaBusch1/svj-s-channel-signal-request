@@ -53,19 +53,19 @@ void myPlotter(){
 		//"JetPt", "JetEta", "JetPhi",
 		//"JetLRPt", "JetLREta", "JetLRPhi", 
 		//"MET_NonInt", 
-		"nSmallR", "nLargeR"
+		//"nSmallR", "nLargeR"
 		//"xdPt", "xdM", "xdPhi", "xdEta",
 		//"xdxdM",
 		//"xdDPhi", "jjDPhi"
 		//"zpPt", "zpM", "zpPhi", "zpEta"
-		//"mjj", "mT", 
+		"mjj", "mT" 
 		//"dPhi_xdj_MET", "dPhi_xd_MET", "dPhi_j_MET",
 		//"dRxdj", "xdj_idx", "nJetsMatched"
 		};
 
 
-  vector<string> input_files = {"hists_output_750_2_ej_pt25eta25.root", "hists_output_750_2_nej_pt25eta25.root"};
-  /*
+  //vector<string> input_files = {"hists_output_750_2_ej_pt25eta25.root", "hists_output_750_2_nej_pt25eta25.root"};
+  
   vector<string> input_files = {
 		"hists_output_750_2_LR71.root",
 		"hists_output_750_8_LR71.root",
@@ -83,7 +83,7 @@ void myPlotter(){
 		//"hists_output_7000_2.root"
 		//"hists_output_7000_8.root"
 		};
-  */
+  
 
   vector<map<string,TH1D*>> all_hists;
   for (auto & f: input_files){
@@ -93,8 +93,8 @@ void myPlotter(){
   //map<string,TH1D*> extra_jets = GetHistograms(my_vars, "test_with_extra_jets.root");
   //map<string,TH1D*> normal_jets = GetHistograms(my_vars, "test_no_extra_jets.root");
 
-  vector<string> legend_names = {"Extra Jets", "No Extra Jets"};
-  /*
+  //vector<string> legend_names = {"Extra Jets", "No Extra Jets"};
+  
   vector<string> legend_names = {
 		"M_{Z'}=750 GeV | r_{inv}=0.2",
 		"M_{Z'}=750 GeV | r_{inv}=0.8",
@@ -114,7 +114,7 @@ void myPlotter(){
 		//"M_{Z'}=7000 GeV | r_{inv}=0.2"
 		//"M_{Z'}=7000 GeV | r_{inv}=0.8"
 		};
-  */
+  
 
   for(auto &var: my_vars){
     vector<TH1D*> plot_hists;
@@ -126,53 +126,5 @@ void myPlotter(){
     Plot_Histograms(var, plot_hists, legend_names);
   }
 
-  /*
-  TFile *file_data_j  = new TFile("test_with_extra_jets.root", "READ");
 
-  TH1D* pt_j = (TH1D*) file_data_j->Get("JetPt");
-  TH1D* eta_j = (TH1D*) file_data_j->Get("JetEta");
-
-  TFile *file_data  = new TFile("test_no_extra_jets.root", "READ");
-  TH1D* pt = (TH1D*) file_data->Get("JetPt");
-  TH1D* eta = (TH1D*) file_data->Get("JetEta");
-
-  
-  TCanvas *c[10];
-  c[0] = new TCanvas("c0","c0",1600,1200);
-  pt->Draw();
-  pt_j->SetLineColor(kRed);
-  pt_j->Draw("same");
-  c[0]->SaveAs(Form("%s/pT.png", save_dir.c_str()));
-
-  //MET
-  c[0] = new TCanvas("c0","c0",1600,1200);
-  TH1F* h_met = new TH1F("h_met", "Truth MET; MET [GeV]; nEvents", 50, 0, 2000);
-  tree0->Draw("MET_TruthAuxDyn.sumet/1000.>>h_met");
-  c[0]->SetLogy();
-  c[0]->SaveAs(Form("%s/MET.png", save_dir.c_str()));
-
-  //Z'
-  c[1] = new TCanvas("c1","c1",1600,1200);
-  TH1F* h_mz = new TH1F("h_mz", "Mass Z' (5000001); M_{Z'} [GeV]; nEvents", 50, 600, 2200);
-  tree0->Draw("TruthBSMWithDecayParticlesAuxDyn.m/1000.>>h_mz", "TruthBSMWithDecayParticlesAuxDyn.pdgId==5000001");
-  c[1]->SaveAs(Form("%s/m_zp.png", save_dir.c_str()));
-
-  //xd
-  c[2] = new TCanvas("c2","c2",1600,1200);
-  TH1F* h_xd1_m = new TH1F("h_xd1_m", "Dark Quark Mass (4900101); M_{xd} [GeV]; nEvents", 50, 0, 1000);
-  tree0->Draw("TruthBSMWithDecayParticlesAuxDyn.m/1000.>>h_xd1_m", "TruthBSMWithDecayParticlesAuxDyn.pdgId==51 || TruthBSMWithDecayParticlesAuxDyn.pdgId==53");
-  c[2]->SaveAs(Form("%s/xd1_m.png", save_dir.c_str()));
-
-  //jets
-  c[3] = new TCanvas("c3","c3",1600,1200);
-  TH1F* h_pt_j1 = new TH1F("h_pt_j1", "Jet pT; p_{T,j} [GeV]; nEvents", 50, 0, 1700);
-  tree0->Draw("AntiKt10TruthTrimmedPtFrac5SmallR20JetsAux.pt/1000.>>h_pt_j1");
-  c[3]->SaveAs(Form("%s/pt_j.png", save_dir.c_str()));  
-
-  // jet multiplicity
-  c[4] = new TCanvas("c4","c4",1600,1200);
-  TH1F* h_njet = new TH1F("h_njet", "Jet Multiplicity; n_{jets}; nEvents", 20, 0, 20); 
-  const xAOD::JetContainer* jets = nullptr; 
-  */
- 
 }

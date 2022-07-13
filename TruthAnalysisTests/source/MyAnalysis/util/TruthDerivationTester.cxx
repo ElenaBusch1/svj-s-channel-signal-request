@@ -51,6 +51,10 @@ namespace po = boost::program_options;
 #include <iostream>
 #include <cmath>
 
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+//	 		Helper Functions
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 // Helper macro for retrieving containers from the event
 #define CHECK_RETRIEVE( container , name ) { \
     if (!event.retrieve( container , name ).isSuccess()){ \
@@ -98,6 +102,9 @@ float GetMt(TLorentzVector v1, TLorentzVector v2, float met_met, float met_phi){
 }
 
 
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+//			Main Routine
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 // Main routine... here we go!
 int main(int argc, char **argv) {
@@ -175,7 +182,10 @@ int main(int argc, char **argv) {
 /*
     Missing full collections with aux: TruthBosonsWithDecayParticles, TruthBosonsWithDecayVertices
 */
-  // Make histograms
+
+  // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  //			Define Histograms
+  // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   // MET histograms
   TH1D* h_metNonInt = new TH1D("MET_NonInt","MET; E^{T}_{miss}",50,0,2000.);
   TH1D* h_metInt = new TH1D("MET_Int","",50,0,200.);
@@ -202,7 +212,8 @@ int main(int argc, char **argv) {
   TH1D* h_nJetsMatched = new TH1D("nJetsMatched", "N jets satisfying dR(j,xd) < 0.4; nJets", 10, 0, 10);
   TH1D* h_dRxdj = new TH1D("dRxdj", "DeltaR(quark, closest jet); #Delta R", 20,0,5);
   TH1D* h_mjj = new TH1D("mjj", "Invariant Mass 2 Closest Jets; M_{jj} [GeV]", 50, 0, 4000);
-  TH1D* h_mT = new TH1D("mT", "System Transverse Mass; m_{T} [GeV]", 50, 0, 4600);
+  TH1D* h_mT_jj = new TH1D("mT_jj", "mT Sum (2 Matched Small-R + MET); m_{T} [GeV]", 50, 0, 4600);
+  TH1D* h_mT_JJ = new TH1D("mT_JJ", "mT Sum (2 Matched Large-R + MET); m_{T} [GeV]", 50, 0, 4600);
   TH1D* h_xdj_idx = new TH1D("xdj_idx", "Index of Jet Closest To Quark", 15, 0, 15);  
   TH1D* h_dPhi_j_MET = new TH1D("dPhi_j_MET", "#Delta#phi MET and Closest Jet; #Delta#phi(MET,j_{closest})", 20, 0, 3.3);
   TH1D* h_dPhi_xdj_MET = new TH1D("dPhi_xdj_MET", "#Delta#phi MET and Closest dR Matched Jet; #Delta#phi(MET,xdj_{closest})", 20, 0, 3.3);
@@ -234,6 +245,10 @@ int main(int argc, char **argv) {
   // For testing the truth metadata
   uint32_t channelNumber = 0;
   std::vector<std::string> weightNames;
+
+  // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  //			Event Loop
+  // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
   // Into the event loop, with an optional cap
   long long nEvents = nevents > 0 ? std::min(static_cast<long long>(event.getEntries()), nevents) : event.getEntries();
@@ -286,20 +301,8 @@ int main(int argc, char **argv) {
       }
       throw;
     }
-    // Event weight handling
-    /*
-    if (h_weights.size()==0){
-      // First event, init!
-      for (auto & name : weightNames ){
-        h_weights.push_back( new TH1D(("h_W_"+name).c_str(),"",100,-10.,10.) );
-      }
-      h_weights.push_back( new TH1D("h_W_nominalTest","",100,-10.,10.) );
-    }
-    for (size_t n=0;n<weightNames.size();++n) h_weights[n]->Fill( weightTool->getWeight(weightNames[n]) );
-    */
-    // Eventually this should be the nominal weight without needing to give an explicit name
-    //h_weights[weightNames.size()]->Fill( weightTool->getWeight(" nominal ") );
-    // Event info
+
+    // Truth particles
     float x1=0.,x2=0.;
     (*xTruthEventContainer)[0]->pdfInfoParameter( x1 , xAOD::TruthEvent::X1 );
     (*xTruthEventContainer)[0]->pdfInfoParameter( x2 , xAOD::TruthEvent::X2 );
@@ -307,6 +310,7 @@ int main(int argc, char **argv) {
     h_x2->Fill( x2 );
     h_xsec->Fill( (*xTruthEventContainer)[0]->crossSection() );
     h_HTFilt->Fill( xEventInfo->auxdata<float>("GenFiltHT") );
+
     // For MET: NonInt, Int, IntOut, IntMuons
     h_metNonInt->Fill( (*truthMET)["NonInt"]->met()*0.001 );
     h_metNonInt->Fill( (*truthMET)["Int"]->met()*0.001 );
@@ -373,7 +377,6 @@ int main(int argc, char **argv) {
     TLorentzVector j_xd1, j_xd2, j_MET, jxd_MET;
     int j_idx = -1;
     for (const auto * j : *smallRJets){ // Small-R jets
-    //for (const auto * j : *largeRJets){ // Small-R jets
       j_idx++;
       h_jetPt->Fill( j->pt()*0.001 );
       h_jetEta->Fill( j->eta());
@@ -401,16 +404,14 @@ int main(int argc, char **argv) {
     if(fabs(v_met.DeltaPhi(quarks[0])) < fabs(v_met.DeltaPhi(quarks[1]))) h_dPhi_xd_MET->Fill(fabs(v_met.DeltaPhi(quarks[0])));
     else h_dPhi_xd_MET->Fill(fabs(v_met.DeltaPhi(quarks[1])));
 
-
     if (smallRJets->size() > 1 && j_xd1_idx != j_xd2_idx){
-    //if (largeRJets->size() > 1 && j_xd1_idx != j_xd2_idx){
 	h_dRxdj->Fill(quarks[0].DeltaR(j_xd1));
 	h_dRxdj->Fill(quarks[1].DeltaR(j_xd2));
         h_xdj_idx->Fill(j_xd1_idx);
         h_xdj_idx->Fill(j_xd2_idx);
         if (dR_xd1_min < 0.4 && dR_xd2_min < 0.4){ 
           h_mjj->Fill((j_xd1+j_xd2).M());
-          h_mT->Fill( GetMt(j_xd1,j_xd2, (*truthMET)["NonInt"]->met()*0.001, (*truthMET)["NonInt"]->phi()) );
+          h_mT_jj->Fill( GetMt(j_xd1,j_xd2, (*truthMET)["NonInt"]->met()*0.001, (*truthMET)["NonInt"]->phi()) );
           h_jjdPhi->Fill(fabs(j_xd1.DeltaPhi(j_xd2)));
         }
     }
@@ -438,7 +439,9 @@ int main(int argc, char **argv) {
   TFile * oRoot = new TFile(outputName.c_str(),"RECREATE");
   oRoot->cd();
 
-  // Write histograms
+  // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  //			Write Histogrmas
+  // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   // MET histograms
   h_metNonInt->Write();
   h_metInt->Write();
@@ -467,7 +470,7 @@ int main(int argc, char **argv) {
   h_nJetsMatched->Write();
 
   h_mjj->Write();
-  h_mT->Write();
+  h_mT_jj->Write();
 
   // Truth jet histograms
   h_jetPt->Write();
