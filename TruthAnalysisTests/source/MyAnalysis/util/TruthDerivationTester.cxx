@@ -326,7 +326,7 @@ int main(int argc, char **argv) {
     //}
     std::vector<TLorentzVector> quarks;
     for (const auto * bsm: *truthBSM){
-      if ( fabs(bsm->pdgId()) == 4900101 && bsm->status() == 71){
+      if ( fabs(bsm->pdgId()) == 4900101 && bsm->status() == 23){
       /*if ( fabs(bsm->pdgId()) == 4900101){
 	std::cout << "pdgId = " << bsm->pdgId() << ", nParents = " << bsm->nParents() << ", status = " << bsm->status() << " | ";
 	for (size_t n=0; n<bsm->nParents();n++){
