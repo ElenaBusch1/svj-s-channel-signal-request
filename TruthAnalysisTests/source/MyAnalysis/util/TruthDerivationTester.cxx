@@ -211,10 +211,15 @@ int main(int argc, char **argv) {
   TH1D* h_xdxdM = new TH1D("xdxdM", "Dark Quark Invariant Mass; M_{xd,xd} [GeV]",80, 0, 8000);
   TH1D* h_nJetsMatched = new TH1D("nJetsMatched", "N jets satisfying dR(j,xd) < 0.4; nJets", 10, 0, 10);
   TH1D* h_dRxdj = new TH1D("dRxdj", "DeltaR(quark, closest jet); #Delta R", 20,0,5);
+  TH1D* h_dR_MET = new TH1D("dR_MET", "DeltaR(quark, MET aligned jet); #Delta R", 25,0,5);
+  TH1D* h_dR_aMET = new TH1D("dR_aMET", "DeltaR(quark, MET anti-aligned jet); #Delta R", 25,0,5);
+  TH1D* h_dRxdj1 = new TH1D("dRxdj1", "DeltaR(quark, leading jet); #Delta R", 25,0,5);
+  TH1D* h_dRxdj2 = new TH1D("dRxdj2", "DeltaR(quark, subleading jet); #Delta R", 25,0,5);
   TH1D* h_mjj = new TH1D("mjj", "Invariant Mass 2 Closest Jets; M_{jj} [GeV]", 50, 0, 4000);
-  TH1D* h_mT_jj = new TH1D("mT_jj", "mT Sum (2 Matched Small-R + MET); m_{T} [GeV]", 50, 0, 4600);
-  TH1D* h_mT_JJ = new TH1D("mT_JJ", "mT Sum (2 Matched Large-R + MET); m_{T} [GeV]", 50, 0, 4600);
-  TH1D* h_xdj_idx = new TH1D("xdj_idx", "Index of Jet Closest To Quark", 15, 0, 15);  
+  TH1D* h_mT_12 = new TH1D("mT_12", "mT Sum (2 Leading + MET); m_{T} [GeV]", 50, 0, 4600);
+  TH1D* h_mT_jj = new TH1D("mT_jj", "mT Sum (2 Matched Jets + MET); m_{T} [GeV]", 50, 0, 4600);
+  TH1D* h_xdj_match_idx = new TH1D("xdj_match_idx", "Index of (matched) Jet Closest To Quark", 10, 0, 10);  
+  TH1D* h_xdj_idx = new TH1D("xdj_idx", "Index of (any) Jet Closest To Quark", 15, 0, 15);  
   TH1D* h_dPhi_j_MET = new TH1D("dPhi_j_MET", "#Delta#phi MET and Closest Jet; #Delta#phi(MET,j_{closest})", 20, 0, 3.3);
   TH1D* h_dPhi_xdj_MET = new TH1D("dPhi_xdj_MET", "#Delta#phi MET and Closest dR Matched Jet; #Delta#phi(MET,xdj_{closest})", 20, 0, 3.3);
   TH1D* h_dPhi_xd_MET = new TH1D("dPhi_xd_MET", "#Delta#phi MET and Closest Dark Quark; #Delta#phi(MET,xd_{closest})", 20, 0, 3.3);
@@ -373,42 +378,80 @@ int main(int argc, char **argv) {
     float dR_xd1_min = 10;
     float dR_xd2_min = 10;
     float dPhi_any_j_min = 10;
+    float dPhi_any_j_max = 0;
     float dPhi_matched_j_min = 10;
-    TLorentzVector j_xd1, j_xd2, j_MET, jxd_MET;
+    TLorentzVector j_xd1, j_xd2, j_MET, j_aMET, jxd_MET, j1, j2;
     int j_idx = -1;
+    bool j1pass = false;
+    bool j2pass = false;
+    int atleast_2_jets = 0;
     for (const auto * j : *smallRJets){ // Small-R jets
+    //for (const auto * j : *largeRJets){ // Small-R jets
+      // small_R jet selections
       j_idx++;
+      if (j->pt()*0.001 < 30) continue;
+      if (fabs(j->eta()) > 2.8) continue;
+      // large_R jet selections
+      //if (j->pt()*0.001 < 100) continue;
+      //if (fabs(j->eta()) > 2.8) continue;
+      //if (j->m()*0.001 < 30 && j->pt()*0.001 < 1000) continue;
+      atleast_2_jets++;
+      if (j_idx==0) j1pass = true;
+      if (j_idx==1) j2pass = true;
       h_jetPt->Fill( j->pt()*0.001 );
       h_jetEta->Fill( j->eta());
       h_jetPhi->Fill( j->phi());
       TLorentzVector v_j(0,0,0,0);
       v_j.SetPtEtaPhiE(j->pt()*0.001, j->eta(), j->phi(), j->e()*0.001);
+
+      // Save leading and subleading
+      if (j_idx == 0) j1 = v_j;
+      if (j_idx == 1) j2 = v_j;
+
       // Find jet closest to each dark quark
       if (v_j.DeltaR(quarks[0]) < dR_xd1_min){ dR_xd1_min = v_j.DeltaR(quarks[0]); j_xd1_idx = j_idx; j_xd1 = v_j;} 
       if (v_j.DeltaR(quarks[1]) < dR_xd2_min){ dR_xd2_min = v_j.DeltaR(quarks[1]); j_xd2_idx = j_idx; j_xd2 = v_j;} 
 
       // Find jet (of all jets) closest to MET
       if (fabs(v_j.DeltaPhi(v_met)) < dPhi_any_j_min){ dPhi_any_j_min = fabs(v_j.DeltaPhi(v_met)); j_MET = v_j;}
-      
+
+      // Find jet (of all jets) furthest from MET
+      if (fabs(v_j.DeltaPhi(v_met)) > dPhi_any_j_max){ dPhi_any_j_max = fabs(v_j.DeltaPhi(v_met)); j_aMET = v_j;}
+ 
       // Find dR matched jet closest to MET
       if (fabs(v_j.DeltaPhi(v_met)) < dPhi_matched_j_min && (v_j.DeltaR(quarks[0]) < 0.4 || v_j.DeltaR(quarks[1]) < 0.4)){ dPhi_matched_j_min = fabs(v_j.DeltaPhi(v_met)); jxd_MET = v_j;}
 
       // Count dR matched jets
       if (v_j.DeltaR(quarks[0]) < 0.4 || v_j.DeltaR(quarks[1]) < 0.4) jets.push_back(v_j);
     }
+    if (atleast_2_jets < 2) continue;
     h_nJetsMatched->Fill(jets.size());
     h_dPhi_j_MET->Fill(dPhi_any_j_min);
-    h_dPhi_xdj_MET->Fill(dPhi_matched_j_min);
+    if (jets.size() > 0) h_dPhi_xdj_MET->Fill(dPhi_matched_j_min);
+
+    // Calculate mT with leading, subleading
+    if (j1pass && j2pass) h_mT_12->Fill( GetMt(j1,j2, (*truthMET)["NonInt"]->met()*0.001, (*truthMET)["NonInt"]->phi()) );
+
+    // Check dR leading, subleading
+    h_dRxdj1->Fill( std::min(j1.DeltaR(quarks[0]), j1.DeltaR(quarks[1])) );
+    h_dRxdj2->Fill( std::min(j2.DeltaR(quarks[0]), j2.DeltaR(quarks[1])) );
+
+    // Check dR MET aligned, MET anti-aligned
+    h_dR_MET->Fill( std::min(j_MET.DeltaR(quarks[0]), j_aMET.DeltaR(quarks[1])) );
+    h_dR_aMET->Fill( std::min(j_aMET.DeltaR(quarks[0]), j_aMET.DeltaR(quarks[1])) );
 
     // Find angle between dark quark and MET;
     if(fabs(v_met.DeltaPhi(quarks[0])) < fabs(v_met.DeltaPhi(quarks[1]))) h_dPhi_xd_MET->Fill(fabs(v_met.DeltaPhi(quarks[0])));
     else h_dPhi_xd_MET->Fill(fabs(v_met.DeltaPhi(quarks[1])));
 
     if (smallRJets->size() > 1 && j_xd1_idx != j_xd2_idx){
+    //if (largeRJets->size() > 1 && j_xd1_idx != j_xd2_idx){
 	h_dRxdj->Fill(quarks[0].DeltaR(j_xd1));
 	h_dRxdj->Fill(quarks[1].DeltaR(j_xd2));
         h_xdj_idx->Fill(j_xd1_idx);
         h_xdj_idx->Fill(j_xd2_idx);
+        if (dR_xd1_min < 0.4) h_xdj_match_idx->Fill(j_xd1_idx);
+        if (dR_xd2_min < 0.4) h_xdj_match_idx->Fill(j_xd2_idx);
         if (dR_xd1_min < 0.4 && dR_xd2_min < 0.4){ 
           h_mjj->Fill((j_xd1+j_xd2).M());
           h_mT_jj->Fill( GetMt(j_xd1,j_xd2, (*truthMET)["NonInt"]->met()*0.001, (*truthMET)["NonInt"]->phi()) );
@@ -464,13 +507,18 @@ int main(int argc, char **argv) {
   h_xdDPhi->Write();
   h_dRxdj->Write();
   h_xdj_idx->Write();
+  h_xdj_match_idx->Write();
   h_dPhi_j_MET->Write();
   h_dPhi_xdj_MET->Write();
   h_dPhi_xd_MET->Write();  
   h_nJetsMatched->Write();
-
+  h_dRxdj1->Write();
+  h_dRxdj2->Write();
+  h_dR_MET->Write();
+  h_dR_aMET->Write();
   h_mjj->Write();
   h_mT_jj->Write();
+  h_mT_12->Write();
 
   // Truth jet histograms
   h_jetPt->Write();

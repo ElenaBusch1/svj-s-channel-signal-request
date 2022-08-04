@@ -21,20 +21,21 @@ map<string,TH1D*> GetHistograms(vector<string> variables, string input_file){
 void Plot_Histograms(string var, vector<TH1D*> hists, vector<string> legend_names){
   TCanvas *canv = new TCanvas("canv","canv",1600,1200);
   TLegend *leg;
-  if(var.find("DPhi") != string::npos) leg = new TLegend(0.05,0.6,0.35,0.94);
+  if(var.find("dPhi") != string::npos) leg = new TLegend(0.1,0.1,0.4,0.4);
   else leg = new TLegend(0.65,0.6,0.96,0.94);
   float max = 0;
   gStyle->SetOptStat(0);
 
   for(int i=0; i<hists.size();i++){
     //hists[i]->SetLineColor(rainbow[i]);
-    hists[i]->SetLineColor(mycolors2[i]);
+    hists[i]->SetLineColor(mycolors[i]);
     hists[i]->SetLineWidth(2);
     hists[i]->Scale(1./hists[i]->Integral());
     hists[i]->GetYaxis()->SetTitle("A.U.");
     if (hists[i]->GetMaximum() > max) max = hists[i]->GetMaximum();
-    //leg->AddEntry(hists[i], Form("%s (%i) ",legend_names[i].c_str(), int(hists[i]->GetEntries())));
-    leg->AddEntry(hists[i], Form("%s  ",legend_names[i].c_str()));
+    leg->AddEntry(hists[i], Form("%s (%i) ",legend_names[i].c_str(), int(hists[i]->GetEntries())));
+    //leg->AddEntry(hists[i], Form("%s  ",legend_names[i].c_str()));
+    if (var.find("dR") != string::npos) cout << var << " " << legend_names[i] << " percent dR matched: " << hists[i]->Integral(1,3) << endl;
   }
   for(int i=0; i<hists.size();i++){
     hists[i]->SetMaximum(max*1.2);
@@ -42,7 +43,7 @@ void Plot_Histograms(string var, vector<TH1D*> hists, vector<string> legend_name
   }
   if (var != "nSmallR" && var != "nLargeR"  && var != "nJetsMatched") canv->SetLogy();
   leg->Draw();
-  canv->SaveAs(Form("%s/%s_xJ_pt100eta25_750_2.png", save_dir.c_str(), var.c_str()));
+  canv->SaveAs(Form("%s/%s_LR_cuts.png", save_dir.c_str(), var.c_str()));
   delete canv;
 } 
 
@@ -58,27 +59,31 @@ void myPlotter(){
 		//"xdxdM",
 		//"xdDPhi", "jjDPhi"
 		//"zpPt", "zpM", "zpPhi", "zpEta"
-		"mjj", "mT" 
-		//"dPhi_xdj_MET", "dPhi_xd_MET", "dPhi_j_MET",
-		//"dRxdj", "xdj_idx", "nJetsMatched"
+		"mT_jj", "mT_12", 
+                "dR_MET", "dR_aMET",
+		"dRxdj1", "dRxdj2",
+                "nJetsMatched"
+		//"dPhi_xdj_MET", //"dPhi_xd_MET", "dPhi_j_MET",
+		//"xdj_idx", "xdj_match_idx" //"dRxdj", "nJetsMatched"
+
 		};
 
 
   //vector<string> input_files = {"hists_output_750_2_ej_pt25eta25.root", "hists_output_750_2_nej_pt25eta25.root"};
   
   vector<string> input_files = {
-		"hists_output_750_2_LR71.root",
-		"hists_output_750_8_LR71.root",
+		"hists_output_750_2_LR.root",
+		"hists_output_750_8_LR.root",
 		//"hists_output_1500_2_zp.root",
 		//"hists_output_2500_2_zp.root",
-		"hists_output_3500_2_LR71.root",
-		"hists_output_3500_8_LR71.root",
+		"hists_output_3500_2_LR.root",
+		"hists_output_3500_8_LR.root",
 		//"hists_output_4000_2.root",
 		//"hists_output_4500_2_zp.root",
 		//"hists_output_5000_2.root",
 		//"hists_output_5500_2_zp.root",
-		"hists_output_6000_2_LR71.root",
-		"hists_output_6000_8_LR71.root"
+		"hists_output_6000_2_LR.root",
+		"hists_output_6000_8_LR.root"
 		//"hists_output_6500_2_zp.root"
 		//"hists_output_7000_2.root"
 		//"hists_output_7000_8.root"
