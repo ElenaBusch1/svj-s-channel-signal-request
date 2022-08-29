@@ -22,8 +22,6 @@ void Plot_Histograms(string var, vector<TH1D*> hists, vector<string> legend_name
   TCanvas *canv = new TCanvas("canv","canv",1600,1200);
   TLegend *leg;
   if(var.find("dPhi") != string::npos) leg = new TLegend(0.1,0.1,0.4,0.4);
-  else if(var.find("DR") != string::npos || var.find("DPhi") != string::npos) leg = new TLegend(0.6,0.1,0.9,0.4);
-  else if(var.find("ptBalance") != string::npos) leg = new TLegend(0.1,0.1,0.4,0.4);
   else leg = new TLegend(0.65,0.6,0.96,0.94);
   float max = 0;
   gStyle->SetOptStat(0);
@@ -45,7 +43,7 @@ void Plot_Histograms(string var, vector<TH1D*> hists, vector<string> legend_name
   }
   if (var != "nSmallR" && var != "nLargeR"  && var != "nJetsMatched") canv->SetLogy();
   leg->Draw();
-  canv->SaveAs(Form("%s/%s_LR_mjj.png", save_dir.c_str(), var.c_str()));
+  canv->SaveAs(Form("%s/%s_LR_cuts.png", save_dir.c_str(), var.c_str()));
   delete canv;
 } 
 
@@ -57,22 +55,14 @@ void myPlotter(){
 		//"JetLRPt", "JetLREta", "JetLRPhi", 
 		//"MET_NonInt", 
 		//"nSmallR", "nLargeR"
-		//"xdPt", "xdPhi", "xdEta",
+		//"xdPt", "xdM", "xdPhi", "xdEta",
 		//"xdxdM",
-		//"xdDPhi", "xd_ptBalance", "xdDR", "dPhi_xd_MET",
-
-		//"zpPt", "zpPhi", "zpEta",
-	
-		//"jet12Pt", "jet12Phi", "jet12Eta",
-		//"mT_12",
-		//"jet12DPhi", "jet12_ptBalance", "jet12DR", "dPhi_jet12_MET",
-		
-		//"MET_NonInt"
-		"mT_jj", "mT_12", "mjj", "mjj_12",
-                //"dR_MET", "dR_aMET",
-		//"dRxdj1", "dRxdj2",
-
-                //"nJetsMatched"
+		//"xdDPhi", "jjDPhi"
+		//"zpPt", "zpM", "zpPhi", "zpEta"
+		"mT_jj", "mT_12", 
+                "dR_MET", "dR_aMET",
+		"dRxdj1", "dRxdj2",
+                "nJetsMatched"
 		//"dPhi_xdj_MET", //"dPhi_xd_MET", "dPhi_j_MET",
 		//"xdj_idx", "xdj_match_idx" //"dRxdj", "nJetsMatched"
 
@@ -82,18 +72,18 @@ void myPlotter(){
   //vector<string> input_files = {"hists_output_750_2_ej_pt25eta25.root", "hists_output_750_2_nej_pt25eta25.root"};
   
   vector<string> input_files = {
-		"hists_output_750_2_LR_cut_j12.root",
-		"hists_output_750_8_LR_cut_j12.root",
+		"hists_output_750_2_LR.root",
+		"hists_output_750_8_LR.root",
 		//"hists_output_1500_2_zp.root",
 		//"hists_output_2500_2_zp.root",
-		"hists_output_3500_2_LR_cut_j12.root",
-		"hists_output_3500_8_LR_cut_j12.root",
+		"hists_output_3500_2_LR.root",
+		"hists_output_3500_8_LR.root",
 		//"hists_output_4000_2.root",
 		//"hists_output_4500_2_zp.root",
 		//"hists_output_5000_2.root",
 		//"hists_output_5500_2_zp.root",
-		"hists_output_6000_2_LR_cut_j12.root",
-		"hists_output_6000_8_LR_cut_j12.root"
+		"hists_output_6000_2_LR.root",
+		"hists_output_6000_8_LR.root"
 		//"hists_output_6500_2_zp.root"
 		//"hists_output_7000_2.root"
 		//"hists_output_7000_8.root"
@@ -117,8 +107,8 @@ void myPlotter(){
 		//"M_{Z'}=1500 GeV | r_{inv}=0.8",
 		//"M_{Z'}=2500 GeV | r_{inv}=0.2",
 		//"M_{Z'}=2500 GeV | r_{inv}=0.8",
-		"M_{Z'}=3000 GeV | r_{inv}=0.2",
-		"M_{Z'}=3000 GeV | r_{inv}=0.8",
+		"M_{Z'}=3500 GeV | r_{inv}=0.2",
+		"M_{Z'}=3500 GeV | r_{inv}=0.8",
 		//"M_{Z'}=4000 GeV | r_{inv}=0.2",
 		//"M_{Z'}=4500 GeV | r_{inv}=0.2",
 		//"M_{Z'}=5000 GeV | r_{inv}=0.2",

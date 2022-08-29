@@ -101,15 +101,6 @@ float GetMt(TLorentzVector v1, TLorentzVector v2, float met_met, float met_phi){
  	return sqrt(mT2);
 }
 
-//Helper for pT balance
-float GetPtBalance(TLorentzVector v1, TLorentzVector v2){
-	float pt_balance;
-	TLorentzVector v12;
-	v12 = v1 + v2;
-	pt_balance = v12.Pt() / (v1.Pt() + v2.Pt()); 
-	return pt_balance;
-}
-
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //			Main Routine
@@ -196,7 +187,7 @@ int main(int argc, char **argv) {
   //			Define Histograms
   // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   // MET histograms
-  TH1D* h_metNonInt = new TH1D("MET_NonInt","MET; E^{T}_{miss}",100,0,2000.);
+  TH1D* h_metNonInt = new TH1D("MET_NonInt","MET; E^{T}_{miss}",50,0,2000.);
   TH1D* h_metInt = new TH1D("MET_Int","",50,0,200.);
   TH1D* h_metIntOut = new TH1D("MET_IntOut","",50,0,100.);
   TH1D* h_metIntMuons = new TH1D("MET_IntMuons","",50,0,300.);
@@ -205,48 +196,33 @@ int main(int argc, char **argv) {
   //for (size_t n=0;n<nParticleContainers;++n) h_partPt[n] = new TH1D((particleKeyList[n]+"_pT").c_str(),"",50,0.,500.);
   //TH1D* h_partConn[nParticleContainers];
   //for (size_t n=0;n<nParticleContainers;++n) h_partConn[n] = new TH1D((particleKeyList[n]+"_Connections").c_str(),"",35,-10,25);
-
   //Dark Quarks
   TH1D* h_xdPt = new TH1D("xdPt", "Dark Quark Pt; p_{T} [GeV]", 70, 0, 4000.);
   TH1D* h_xdEta = new TH1D("xdEta", "Dark Quark Eta; #eta", 50, -5., 5.);
   TH1D* h_xdPhi = new TH1D("xdPhi", "Dark Quark Phi; #phi", 50, -3.14, 3.14);
   TH1D* h_xdM = new TH1D("xdM", "Dark Quark Mass; M [GeV]", 20, 5, 15);
   TH1D* h_xdDPhi = new TH1D("xdDPhi", "#Delta#phi Dark Quarks; #Delta#phi(xd,xd)", 20, 0,3.3);
-  TH1D* h_xdDR = new TH1D("xdDR", "#Delta R Dark Quarks; #Delta R(xd,xd)", 20, 0,3.3);
-  TH1D* h_xd_ptBalance = new TH1D("xd_ptBalance", "p_{T} Balance Dark Quarks; p_{T} balance", 50, 0,1.0);
-  TH1D* h_xdxdM = new TH1D("xdxdM", "Dark Quark Invariant Mass; M_{xd,xd} [GeV]",80, 0, 8000);
-  TH1D* h_dPhi_xd_MET = new TH1D("dPhi_xd_MET", "#Delta#phi MET and Closest Dark Quark; #Delta#phi(MET,xd_{closest})", 20, 0, 3.3);
 
-  // Z' boson
   TH1D* h_zpPt = new TH1D("zpPt", "Z' Pt; p_{T} [GeV]", 70, 0, 4000.);
   TH1D* h_zpEta = new TH1D("zpEta", "Z' Eta; #eta", 50, -5., 5.);
   TH1D* h_zpPhi = new TH1D("zpPhi", "Z' Phi; #phi", 50, -3.14, 3.14);
   TH1D* h_zpM = new TH1D("zpM", "Z' Mass; M [GeV]", 80, 0, 8000);
 
-  // Leading Jets
-  TH1D* h_mT_12 = new TH1D("mT_12", "mT Sum (2 Leading + MET); m_{T} [GeV]", 50, 0, 4600);
-  TH1D* h_jet12Pt = new TH1D("jet12Pt", "Leading + Subleading Jet Pt; p_{T} [GeV]", 70, 0, 4000.);
-  TH1D* h_jet12Eta = new TH1D("jet12Eta", "Leading + Subleading Jet Eta; #eta", 50, -5., 5.);
-  TH1D* h_jet12Phi = new TH1D("jet12Phi", "Leading + Subleading Jet Phi; #phi", 50, -3.14, 3.14);
-  TH1D* h_jet12DPhi = new TH1D("jet12DPhi", "#Delta#phi Leading + Subleading Jet; #Delta#phi(J1,J2)", 20, 0,3.3);
-  TH1D* h_jet12DR = new TH1D("jet12DR", "#Delta R Leading + Subleading Jet; #Delta R(J1,J2)", 20, 0,3.3);
-  TH1D* h_jet12_ptBalance = new TH1D("jet12_ptBalance", "p_{T} Balance Jet1 + Jet2; p_{T} balance", 50, 0,1.1);
-  TH1D* h_dPhi_jet12_MET = new TH1D("dPhi_jet12_MET", "#Delta#phi MET and Leading/Subleading Jet (closest); #Delta#phi(MET,j12_{closest})", 20, 0, 3.3);
-  
-  // Jet matching
+  TH1D* h_xdxdM = new TH1D("xdxdM", "Dark Quark Invariant Mass; M_{xd,xd} [GeV]",80, 0, 8000);
   TH1D* h_nJetsMatched = new TH1D("nJetsMatched", "N jets satisfying dR(j,xd) < 0.4; nJets", 10, 0, 10);
   TH1D* h_dRxdj = new TH1D("dRxdj", "DeltaR(quark, closest jet); #Delta R", 20,0,5);
   TH1D* h_dR_MET = new TH1D("dR_MET", "DeltaR(quark, MET aligned jet); #Delta R", 25,0,5);
   TH1D* h_dR_aMET = new TH1D("dR_aMET", "DeltaR(quark, MET anti-aligned jet); #Delta R", 25,0,5);
   TH1D* h_dRxdj1 = new TH1D("dRxdj1", "DeltaR(quark, leading jet); #Delta R", 25,0,5);
   TH1D* h_dRxdj2 = new TH1D("dRxdj2", "DeltaR(quark, subleading jet); #Delta R", 25,0,5);
-  TH1D* h_mjj = new TH1D("mjj", "M_{jj} (2 matched jets); M_{jj} [GeV]", 50, 0, 4000);
-  TH1D* h_mjj_12 = new TH1D("mjj_12", "M_{jj} (2 leading jets); M_{jj} [GeV]", 50, 0, 4000);
+  TH1D* h_mjj = new TH1D("mjj", "Invariant Mass 2 Closest Jets; M_{jj} [GeV]", 50, 0, 4000);
+  TH1D* h_mT_12 = new TH1D("mT_12", "mT Sum (2 Leading + MET); m_{T} [GeV]", 50, 0, 4600);
   TH1D* h_mT_jj = new TH1D("mT_jj", "mT Sum (2 Matched Jets + MET); m_{T} [GeV]", 50, 0, 4600);
   TH1D* h_xdj_match_idx = new TH1D("xdj_match_idx", "Index of (matched) Jet Closest To Quark", 10, 0, 10);  
   TH1D* h_xdj_idx = new TH1D("xdj_idx", "Index of (any) Jet Closest To Quark", 15, 0, 15);  
   TH1D* h_dPhi_j_MET = new TH1D("dPhi_j_MET", "#Delta#phi MET and Closest Jet; #Delta#phi(MET,j_{closest})", 20, 0, 3.3);
   TH1D* h_dPhi_xdj_MET = new TH1D("dPhi_xdj_MET", "#Delta#phi MET and Closest dR Matched Jet; #Delta#phi(MET,xdj_{closest})", 20, 0, 3.3);
+  TH1D* h_dPhi_xd_MET = new TH1D("dPhi_xd_MET", "#Delta#phi MET and Closest Dark Quark; #Delta#phi(MET,xd_{closest})", 20, 0, 3.3);
 
   // Small-R jets
   TH1D* h_nSmallR = new TH1D("nSmallR", "nJets (Small-R); N_{jets}", 15, 0, 15);
@@ -342,12 +318,9 @@ int main(int argc, char **argv) {
 
     // For MET: NonInt, Int, IntOut, IntMuons
     h_metNonInt->Fill( (*truthMET)["NonInt"]->met()*0.001 );
-    //h_metNonInt->Fill( (*truthMET)["Int"]->met()*0.001 );
-    //h_metNonInt->Fill( (*truthMET)["IntOut"]->met()*0.001 );
-    //h_metNonInt->Fill( (*truthMET)["IntMuons"]->met()*0.001 );
-    TLorentzVector v_met(0,0,0,0);
-    v_met.SetPtEtaPhiM((*truthMET)["NonInt"]->met()*0.001,0,(*truthMET)["NonInt"]->phi(),0.0);
-
+    h_metNonInt->Fill( (*truthMET)["Int"]->met()*0.001 );
+    h_metNonInt->Fill( (*truthMET)["IntOut"]->met()*0.001 );
+    h_metNonInt->Fill( (*truthMET)["IntMuons"]->met()*0.001 );
     // Truth particles
     //for (size_t n=0;n<nParticleContainers;++n){ // PT and connections for all
     //  for (const auto * p : *truthParticles[n]){
@@ -356,9 +329,6 @@ int main(int argc, char **argv) {
     //    h_partConn[n]->Fill( -1-countParents( p ) );
     //  }
     //}
-    int nStableHadrons;
-    int nUnstableHadrons;
-
     std::vector<TLorentzVector> quarks;
     for (const auto * bsm: *truthBSM){
       if ( fabs(bsm->pdgId()) == 4900101 && bsm->status() == 23){
@@ -384,14 +354,11 @@ int main(int argc, char **argv) {
 	h_zpEta->Fill( v_zp.Eta() );
 	h_zpPhi->Fill( v_zp.Phi() );
 	h_zpM->Fill( v_zp.M() );
-      }
-      if (fabs(bsm->pdgId()) == 4900211) 
+      } 
     }
     //if(quarks.size() != 2){std::cout << "No quarks found" << std::endl; continue;}
     h_xdxdM->Fill((quarks[0]+quarks[1]).M());
     h_xdDPhi->Fill(fabs(quarks[0].DeltaPhi(quarks[1])));
-    h_xdDR->Fill(quarks[0].DeltaR(quarks[1]));
-    h_xd_ptBalance->Fill(GetPtBalance(quarks[0], quarks[1]));
 
     //h_nSmallR->Fill(smallRJets->size());
     int nSmallR = 0;
@@ -401,6 +368,8 @@ int main(int argc, char **argv) {
     h_nSmallR->Fill(nSmallR);
 
     // MET Vec
+    TLorentzVector v_met(0,0,0,0);
+    v_met.SetPtEtaPhiM((*truthMET)["NonInt"]->met()*0.001,0,(*truthMET)["NonInt"]->phi(),0.0);
 
     // Small R Jets
     std::vector<TLorentzVector> jets;
@@ -416,16 +385,16 @@ int main(int argc, char **argv) {
     bool j1pass = false;
     bool j2pass = false;
     int atleast_2_jets = 0;
-    //for (const auto * j : *smallRJets){ // Small-R jets
-    for (const auto * j : *largeRJets){ // Small-R jets
-      j_idx++;
+    for (const auto * j : *smallRJets){ // Small-R jets
+    //for (const auto * j : *largeRJets){ // Small-R jets
       // small_R jet selections
-      //if (j->pt()*0.001 < 20) continue;
-      //if (fabs(j->eta()) > 4.5) continue;
+      j_idx++;
+      if (j->pt()*0.001 < 30) continue;
+      if (fabs(j->eta()) > 2.8) continue;
       // large_R jet selections
-      if (j->pt()*0.001 < 200) continue;
-      if (fabs(j->eta()) > 2.0) continue;
-      if (j->m()*0.001 < 40 ) continue;
+      //if (j->pt()*0.001 < 100) continue;
+      //if (fabs(j->eta()) > 2.8) continue;
+      //if (j->m()*0.001 < 30 && j->pt()*0.001 < 1000) continue;
       atleast_2_jets++;
       if (j_idx==0) j1pass = true;
       if (j_idx==1) j2pass = true;
@@ -460,21 +429,8 @@ int main(int argc, char **argv) {
     h_dPhi_j_MET->Fill(dPhi_any_j_min);
     if (jets.size() > 0) h_dPhi_xdj_MET->Fill(dPhi_matched_j_min);
 
-    // Calculate variables with leading, subleading jet
-    if (j1pass && j2pass){
-	h_mT_12->Fill( GetMt(j1,j2, (*truthMET)["NonInt"]->met()*0.001, (*truthMET)["NonInt"]->phi()) );
-        h_mjj_12->Fill((j1+j2).M());
-        h_jet12Pt->Fill( j1.Pt());
-	h_jet12Pt->Fill( j2.Pt());
-	h_jet12Eta->Fill( j1.Eta());
-	h_jet12Eta->Fill( j2.Eta());
-	h_jet12Phi->Fill( j1.Phi());
-	h_jet12Phi->Fill( j2.Phi());
-        h_jet12DPhi->Fill( fabs(j1.DeltaPhi(j2)) );
-        h_jet12DR->Fill( j1.DeltaR(j2) );
-        h_dPhi_jet12_MET->Fill( std::min( fabs(j1.DeltaPhi(v_met)), fabs(j2.DeltaPhi(v_met)) ) );
-        h_jet12_ptBalance->Fill( GetPtBalance(j1, j2) );
-    }
+    // Calculate mT with leading, subleading
+    if (j1pass && j2pass) h_mT_12->Fill( GetMt(j1,j2, (*truthMET)["NonInt"]->met()*0.001, (*truthMET)["NonInt"]->phi()) );
 
     // Check dR leading, subleading
     h_dRxdj1->Fill( std::min(j1.DeltaR(quarks[0]), j1.DeltaR(quarks[1])) );
@@ -488,8 +444,8 @@ int main(int argc, char **argv) {
     if(fabs(v_met.DeltaPhi(quarks[0])) < fabs(v_met.DeltaPhi(quarks[1]))) h_dPhi_xd_MET->Fill(fabs(v_met.DeltaPhi(quarks[0])));
     else h_dPhi_xd_MET->Fill(fabs(v_met.DeltaPhi(quarks[1])));
 
-    //if (smallRJets->size() > 1 && j_xd1_idx != j_xd2_idx){
-    if (largeRJets->size() > 1 && j_xd1_idx != j_xd2_idx){
+    if (smallRJets->size() > 1 && j_xd1_idx != j_xd2_idx){
+    //if (largeRJets->size() > 1 && j_xd1_idx != j_xd2_idx){
 	h_dRxdj->Fill(quarks[0].DeltaR(j_xd1));
 	h_dRxdj->Fill(quarks[1].DeltaR(j_xd2));
         h_xdj_idx->Fill(j_xd1_idx);
@@ -534,7 +490,6 @@ int main(int argc, char **argv) {
   h_metInt->Write();
   h_metIntOut->Write();
   h_metIntMuons->Write();
-
   // Truth particle histograms
   //for (size_t n=0;n<nParticleContainers;++n) h_partPt[n]->Write();
   //for (size_t n=0;n<nParticleContainers;++n) h_partConn[n]->Write();
@@ -542,32 +497,20 @@ int main(int argc, char **argv) {
   h_xdM->Write();
   h_xdEta->Write();
   h_xdPhi->Write();
-  h_xdDPhi->Write();
-  h_xdDR->Write();
-  h_xd_ptBalance->Write();
-  h_dPhi_xd_MET->Write();  
-  h_xdxdM->Write();
 
   h_zpPt->Write();
   h_zpM->Write();
   h_zpEta->Write();
   h_zpPhi->Write();
 
-  h_mT_12->Write();
-  h_mjj_12->Write();
-  h_jet12Pt->Write();
-  h_jet12Eta->Write();
-  h_jet12Phi->Write();
-  h_jet12DPhi->Write();
-  h_jet12DR->Write();
-  h_jet12_ptBalance->Write();
-  h_dPhi_jet12_MET->Write();
-
+  h_xdxdM->Write();
+  h_xdDPhi->Write();
   h_dRxdj->Write();
   h_xdj_idx->Write();
   h_xdj_match_idx->Write();
   h_dPhi_j_MET->Write();
   h_dPhi_xdj_MET->Write();
+  h_dPhi_xd_MET->Write();  
   h_nJetsMatched->Write();
   h_dRxdj1->Write();
   h_dRxdj2->Write();
@@ -575,6 +518,7 @@ int main(int argc, char **argv) {
   h_dR_aMET->Write();
   h_mjj->Write();
   h_mT_jj->Write();
+  h_mT_12->Write();
 
   // Truth jet histograms
   h_jetPt->Write();
