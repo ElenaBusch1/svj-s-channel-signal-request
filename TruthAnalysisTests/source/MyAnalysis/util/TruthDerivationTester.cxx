@@ -208,6 +208,30 @@ int main(int argc, char **argv) {
   TH1D* h_zpPhi = new TH1D("zpPhi", "Z' Phi; #phi", 50, -3.14, 3.14);
   TH1D* h_zpM = new TH1D("zpM", "Z' Mass; M [GeV]", 80, 0, 8000);
 
+  TH1D* h_r_inv = new TH1D("r_inv", "r_{inv} fraction; r_{inv}", 20, 0, 1);
+  TH1D* h_children = new TH1D("children", "children of all dark hadrons; PDGID",80,0,80);
+  TH1D* h_children_111 = new TH1D("children_111", "children of 4900111; PDGID",80,0,80);
+  TH1D* h_children_113 = new TH1D("children_113", "children of 4900113; PDGID",80,0,80);
+  TH1D* h_children_211 = new TH1D("children_211", "children of 4900211; PDGID",80,0,80);
+  TH1D* h_children_213 = new TH1D("children_213", "children of 4900213; PDGID",80,0,80);
+  TH1D* h_hadrons = new TH1D("hadrons", "Hadron Decays; ID", 16,0,16);
+  h_hadrons->GetXaxis()->SetBinLabel(1,"4900111");
+  h_hadrons->GetXaxis()->SetBinLabel(2,"No decay");
+  h_hadrons->GetXaxis()->SetBinLabel(3,"Invisible");
+  h_hadrons->GetXaxis()->SetBinLabel(4,"Visible");
+  h_hadrons->GetXaxis()->SetBinLabel(5,"4900113");
+  h_hadrons->GetXaxis()->SetBinLabel(6,"No decay");
+  h_hadrons->GetXaxis()->SetBinLabel(7,"Invisible");
+  h_hadrons->GetXaxis()->SetBinLabel(8,"Visible");
+  h_hadrons->GetXaxis()->SetBinLabel(9,"4900211");
+  h_hadrons->GetXaxis()->SetBinLabel(10,"No decay");
+  h_hadrons->GetXaxis()->SetBinLabel(11,"Invisible");
+  h_hadrons->GetXaxis()->SetBinLabel(12,"Visible");
+  h_hadrons->GetXaxis()->SetBinLabel(13,"4900213");
+  h_hadrons->GetXaxis()->SetBinLabel(14,"No decay");
+  h_hadrons->GetXaxis()->SetBinLabel(15,"Invisible");
+  h_hadrons->GetXaxis()->SetBinLabel(16,"Visible");
+
   TH1D* h_xdxdM = new TH1D("xdxdM", "Dark Quark Invariant Mass; M_{xd,xd} [GeV]",80, 0, 8000);
   TH1D* h_nJetsMatched = new TH1D("nJetsMatched", "N jets satisfying dR(j,xd) < 0.4; nJets", 10, 0, 10);
   TH1D* h_dRxdj = new TH1D("dRxdj", "DeltaR(quark, closest jet); #Delta R", 20,0,5);
@@ -330,6 +354,9 @@ int main(int argc, char **argv) {
     //  }
     //}
     std::vector<TLorentzVector> quarks;
+    int n_vis = 0;
+    int n_invs = 0;
+    float r_inv;
     for (const auto * bsm: *truthBSM){
       if ( fabs(bsm->pdgId()) == 4900101 && bsm->status() == 23){
       /*if ( fabs(bsm->pdgId()) == 4900101){
@@ -354,8 +381,39 @@ int main(int argc, char **argv) {
 	h_zpEta->Fill( v_zp.Eta() );
 	h_zpPhi->Fill( v_zp.Phi() );
 	h_zpM->Fill( v_zp.M() );
-      } 
-    }
+      }
+      if (fabs(bsm->pdgId()) <4900214 && fabs(bsm->pdgId()) > 4900110){
+      //if (fabs(bsm->pdgId()) == 4900211){
+	// calculate r_inv
+	bool visible = false;
+        for (size_t n=0; n<bsm->nChildren();n++){
+           const xAOD::TruthParticle *c = bsm->child(n); 
+           if (fabs(c->pdgId())< 23){visible = true; /*n_vis++;*/}
+           else if (fabs(c->pdgId()) != 51 && fabs(c->pdgId()) != 53) std::cout << "Unknown child ID " << c->pdgId() << " for hadron " << bsm->pdgId() << std::endl;
+           h_children->Fill(fabs(c->pdgId()));
+	   if (fabs(bsm->pdgId()) == 4900111) h_children_111->Fill(fabs(c->pdgId()));
+	   if (fabs(bsm->pdgId()) == 4900113) h_children_113->Fill(fabs(c->pdgId()));
+	   if (fabs(bsm->pdgId()) == 4900211) h_children_211->Fill(fabs(c->pdgId()));
+	   if (fabs(bsm->pdgId()) == 4900213) h_children_213->Fill(fabs(c->pdgId()));
+	}
+        if (visible) n_vis++;
+	//else if (!visible && bsm->nChildren() > 0) n_invs++;
+	else n_invs++;
+
+	int factor=-16;
+        if (fabs(bsm->pdgId()) == 4900111) factor = 0;
+        if (fabs(bsm->pdgId()) == 4900113) factor = 4;
+        if (fabs(bsm->pdgId()) == 4900211) factor = 8;
+        if (fabs(bsm->pdgId()) == 4900213) factor = 12;
+	h_hadrons->Fill(factor);
+	if(bsm->nChildren() == 0) h_hadrons->Fill(factor+1);
+	if(!visible && bsm->nChildren() > 0) h_hadrons->Fill(factor+2);
+	if(visible) h_hadrons->Fill(factor+3);
+      }//dark hadron if
+    }//bsm loop
+    r_inv = (float)n_invs/((float)n_invs+(float)n_vis);
+    h_r_inv->Fill(r_inv);
+
     //if(quarks.size() != 2){std::cout << "No quarks found" << std::endl; continue;}
     h_xdxdM->Fill((quarks[0]+quarks[1]).M());
     h_xdDPhi->Fill(fabs(quarks[0].DeltaPhi(quarks[1])));
@@ -502,6 +560,14 @@ int main(int argc, char **argv) {
   h_zpM->Write();
   h_zpEta->Write();
   h_zpPhi->Write();
+
+  h_r_inv->Write();
+  h_children->Write();
+  h_children_111->Write();
+  h_children_113->Write();
+  h_children_211->Write();
+  h_children_213->Write();
+  h_hadrons->Write();
 
   h_xdxdM->Write();
   h_xdDPhi->Write();
