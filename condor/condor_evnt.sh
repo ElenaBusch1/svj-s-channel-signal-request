@@ -26,11 +26,11 @@ Gen_tf.py --ecmEnergy=13000. --firstEvent=1  --maxEvents=$N_EVENTS --randomSeed=
 )
 
 #2 make the TRUTH DAOD 
-(
-echo "GETTING TRUTH DAOD..."
-asetup AthDerivation,21.2.132.0
-Reco_tf.py --inputEVNTFile $RUN_NUMBER$STREND --outputDAODFile $RUN_NUMBER$STREND --reductionConf TRUTH3
-)
+#(
+#echo "GETTING TRUTH DAOD..."
+#asetup AthDerivation,21.2.132.0
+#Reco_tf.py --inputEVNTFile $RUN_NUMBER$STREND --outputDAODFile $RUN_NUMBER$STREND --reductionConf TRUTH1
+#)
 
 ##3 make the histogram file
 #(
@@ -39,12 +39,10 @@ Reco_tf.py --inputEVNTFile $RUN_NUMBER$STREND --outputDAODFile $RUN_NUMBER$STREN
 #TruthDerivationTester --input DAOD_TRUTH3.$RUN_NUMBER$STREND --output hists_$RUN_NUMBER$STREND --nevents -1
 #)
 
-#--------------------------------------------------------------
-# Generate (already done)
+#4 Simulate
 #(
-#asetup AthGeneration,21.6.48
-#Gen_tf.py --ecmEnergy 13000 --firstEvent 1 --maxEvents $N_EVENTS --randomSeed 10041992 --jobConfig $RUN_NUMBER --outputEVNTFile EVNT.root
-#)
+#asetup AthSimulation,21.0.136
+#Sim_tf.py --inputEvgenFile $RUN_NUMBER$STREND --outputHITSFile HITS.root  --maxEvents $N_EVENTS --physicsList 'FTFP_BERT_ATL_VALIDATION' --truthStrategy 'MC15aPlusLLP' --simulator 'FullG4' --DBRelease 'all:current' --conditionsTag 'default:OFLCOND-MC16-SDR-14' --DataRunNumber '284500' --preExec 'EVNTtoHITS:simFlags.SimBarcodeOffset.set_Value_and_Lock(200000)' 'EVNTtoHITS:simFlags.TRTRangeCut=30.0;simFlags.TightMuonStepping=True' --preInclude 'EVNTtoHITS:SimulationJobOptions/preInclude.BeamPipeKill.py,SimulationJobOptions/preInclude.FrozenShowersFCalOnly.py' --geometryVersion 'default:ATLAS-R2-2016-01-00-01_VALIDATION' --postInclude 'default:RecJobTransforms/UseFrontier.py'
 #
 ## Reconstruct to Get Truth DAOD
 #(

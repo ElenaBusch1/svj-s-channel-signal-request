@@ -86,10 +86,6 @@ init = True
 for line in oldlhe:
             if '5000521' in line:
                 line = line.replace('5000521','4900101')                           
-            if '4900211' in line:
-                line = line.replace('4900211','51')                           
-            if '4900213' in line:
-                line = line.replace('4900213','53')                           
             newlhe.write(line)
 oldlhe.close()
 newlhe.close()
@@ -116,6 +112,7 @@ evgenConfig.keywords+=['BSM',"sChannel"]
 evgenConfig.generators+=["MadGraph","Pythia8","EvtGen"]
 evgenConfig.contact  = ['ebusch@cern.ch']
 evgenConfig.process = "p p --> xd xd~ j j"
+evgenConfig.specialConfig = "NonInteractingPDGCodes=[-51,51,-52,52,-53,53]"
 
 PYTHIA8_nJetMax=2
 PYTHIA8_Process='pp>xdxd~'
@@ -143,35 +140,45 @@ genSeq.Pythia8.Commands+=["4900014:m0 = 5000"]
 genSeq.Pythia8.Commands+=["4900015:m0 = 5000"]
 genSeq.Pythia8.Commands+=["4900016:m0 = 5000"]
 
-# Fix dark hadron mass?
-genSeq.Pythia8.Commands+=["HiddenValley:Ngauge  = 2"]
+genSeq.Pythia8.Commands+=["HiddenValley:Ngauge  = 3"]
 genSeq.Pythia8.Commands+=["HiddenValley:alphaOrder = 1"]
-genSeq.Pythia8.Commands+=["HiddenValley:Lambda = 5.0"]
+genSeq.Pythia8.Commands+=["HiddenValley:Lambda = 10.0"]
 genSeq.Pythia8.Commands+=["HiddenValley:nFlav  = 2 "]
 genSeq.Pythia8.Commands+=["HiddenValley:spinFv = 0"]
 genSeq.Pythia8.Commands+=["HiddenValley:FSR = on"]
 genSeq.Pythia8.Commands+=["HiddenValley:fragment = on"]
 genSeq.Pythia8.Commands+=["HiddenValley:pTminFSR = 5.5"]
-genSeq.Pythia8.Commands+=["HiddenValley:probVector = 0.75"]
+genSeq.Pythia8.Commands+=["HiddenValley:probVector = 0.58"]
 
 genSeq.Pythia8.Commands+=["4900101:mWidth = 0.2"]
 genSeq.Pythia8.Commands+=["4900101:mMin = 9.8"]
 genSeq.Pythia8.Commands+=["4900101:mMax = 10.2"]
-genSeq.Pythia8.Commands+=["4900111:m0 = 20.0"]
-genSeq.Pythia8.Commands+=["4900113:m0 = 20.0"]
-genSeq.Pythia8.Commands+=["4900211:m0 = 20.0"]
-genSeq.Pythia8.Commands+=["4900213:m0 = 20.0"]
-genSeq.Pythia8.Commands+=["51:m0 = 9.99"]
-genSeq.Pythia8.Commands+=["53:m0 = 9.99"]
+genSeq.Pythia8.Commands+=["4900111:m0 = 17.0"]
+genSeq.Pythia8.Commands+=["4900113:m0 = 31.77"]
+genSeq.Pythia8.Commands+=["4900211:m0 = 17.0"]
+genSeq.Pythia8.Commands+=["4900213:m0 = 31.77"]
+genSeq.Pythia8.Commands+=["51:m0 = 0.0"]
+genSeq.Pythia8.Commands+=["53:m0 = 0.0"]
 
-genSeq.Pythia8.Commands+=["4900111:onechannel = 1 {0} 91 -3 3".format(1 - Rinv)] # check Rinv syntax
-genSeq.Pythia8.Commands+=["4900111:addchannel = 1 {0} 0 51 -51".format(Rinv)]
+# Allow all 4 mesons to decay
+genSeq.Pythia8.Commands+=["4900111:onechannel = 1 {0} 0 51 -51".format(Rinv)]
+genSeq.Pythia8.Commands+=["4900111:addchannel = 1 {0} 91 -3 3".format(1 - Rinv)] # check Rinv syntax
 
-genSeq.Pythia8.Commands+=["4900113:onechannel = 1 {0}  91 -1 1".format((1-Rinv)/5)] 
+genSeq.Pythia8.Commands+=["4900211:onechannel = 1 {0} 0 51 -51".format(Rinv)]
+genSeq.Pythia8.Commands+=["4900211:addchannel = 1 {0} 91 -3 3".format(1 - Rinv)] # check Rinv syntax
+
+genSeq.Pythia8.Commands+=["4900113:onechannel = 1 {0} 0 53 -53".format(Rinv)] 
+genSeq.Pythia8.Commands+=["4900113:addchannel = 1 {0}  91 -1 1".format((1-Rinv)/5)] 
 genSeq.Pythia8.Commands+=["4900113:addchannel = 1 {0}  91 -2 2".format((1-Rinv)/5)]
 genSeq.Pythia8.Commands+=["4900113:addchannel = 1 {0}  91 -3 3".format((1-Rinv)/5)]
 genSeq.Pythia8.Commands+=["4900113:addchannel = 1 {0}  91 -4 4".format((1-Rinv)/5)]
 genSeq.Pythia8.Commands+=["4900113:addchannel = 1 {0}  91 -5 5".format((1-Rinv)/5)]
-genSeq.Pythia8.Commands+=["4900113:addchannel = 1 {0} 0 53 -53".format(Rinv)] 
+
+genSeq.Pythia8.Commands+=["4900213:onechannel = 1 {0} 0 53 -53".format(Rinv)] 
+genSeq.Pythia8.Commands+=["4900213:addchannel = 1 {0}  91 -1 1".format((1-Rinv)/5)] 
+genSeq.Pythia8.Commands+=["4900213:addchannel = 1 {0}  91 -2 2".format((1-Rinv)/5)]
+genSeq.Pythia8.Commands+=["4900213:addchannel = 1 {0}  91 -3 3".format((1-Rinv)/5)]
+genSeq.Pythia8.Commands+=["4900213:addchannel = 1 {0}  91 -4 4".format((1-Rinv)/5)]
+genSeq.Pythia8.Commands+=["4900213:addchannel = 1 {0}  91 -5 5".format((1-Rinv)/5)]
 
 genSeq.Pythia8.Commands+=["Merging:mayRemoveDecayProducts=on"] 

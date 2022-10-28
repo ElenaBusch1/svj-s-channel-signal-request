@@ -176,7 +176,8 @@ int main(int argc, char **argv) {
   const xAOD::TruthMetaDataContainer* truthMeta(nullptr);
   const xAOD::MissingETContainer* truthMET(nullptr);
   //const xAOD::TruthParticleContainer * truthParticles[nParticleContainers];
-  const xAOD::TruthParticleContainer * truthBSM(nullptr);
+  const xAOD::TruthParticleContainer * truthParticles(nullptr);
+  //const xAOD::TruthParticleContainer * truthBSM(nullptr);
   //for (size_t n=0;n<nParticleContainers;++n) truthParticles[n] = nullptr;
 
 /*
@@ -187,7 +188,7 @@ int main(int argc, char **argv) {
   //			Define Histograms
   // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   // MET histograms
-  TH1D* h_metNonInt = new TH1D("MET_NonInt","MET; E^{T}_{miss}",50,0,2000.);
+  TH1D* h_metNonInt = new TH1D("MET_NonInt","MET; E^{T}_{miss}",50,0,800.);
   TH1D* h_metInt = new TH1D("MET_Int","",50,0,200.);
   TH1D* h_metIntOut = new TH1D("MET_IntOut","",50,0,100.);
   TH1D* h_metIntMuons = new TH1D("MET_IntMuons","",50,0,300.);
@@ -209,28 +210,28 @@ int main(int argc, char **argv) {
   TH1D* h_zpM = new TH1D("zpM", "Z' Mass; M [GeV]", 80, 0, 8000);
 
   TH1D* h_r_inv = new TH1D("r_inv", "r_{inv} fraction; r_{inv}", 20, 0, 1);
-  TH1D* h_children = new TH1D("children", "children of all dark hadrons; PDGID",80,0,80);
+  TH1D* h_children = new TH1D("children", "children of all dark hadrons; pdgId",80,0,80);
   TH1D* h_children_111 = new TH1D("children_111", "children of 4900111; PDGID",80,0,80);
   TH1D* h_children_113 = new TH1D("children_113", "children of 4900113; PDGID",80,0,80);
   TH1D* h_children_211 = new TH1D("children_211", "children of 4900211; PDGID",80,0,80);
   TH1D* h_children_213 = new TH1D("children_213", "children of 4900213; PDGID",80,0,80);
   TH1D* h_hadrons = new TH1D("hadrons", "Hadron Decays; ID", 16,0,16);
   h_hadrons->GetXaxis()->SetBinLabel(1,"4900111");
-  h_hadrons->GetXaxis()->SetBinLabel(2,"No decay");
+  h_hadrons->GetXaxis()->SetBinLabel(4,"No decay");
   h_hadrons->GetXaxis()->SetBinLabel(3,"Invisible");
-  h_hadrons->GetXaxis()->SetBinLabel(4,"Visible");
+  h_hadrons->GetXaxis()->SetBinLabel(2,"Visible");
   h_hadrons->GetXaxis()->SetBinLabel(5,"4900113");
-  h_hadrons->GetXaxis()->SetBinLabel(6,"No decay");
+  h_hadrons->GetXaxis()->SetBinLabel(8,"No decay");
   h_hadrons->GetXaxis()->SetBinLabel(7,"Invisible");
-  h_hadrons->GetXaxis()->SetBinLabel(8,"Visible");
+  h_hadrons->GetXaxis()->SetBinLabel(6,"Visible");
   h_hadrons->GetXaxis()->SetBinLabel(9,"4900211");
-  h_hadrons->GetXaxis()->SetBinLabel(10,"No decay");
+  h_hadrons->GetXaxis()->SetBinLabel(12,"No decay");
   h_hadrons->GetXaxis()->SetBinLabel(11,"Invisible");
-  h_hadrons->GetXaxis()->SetBinLabel(12,"Visible");
+  h_hadrons->GetXaxis()->SetBinLabel(10,"Visible");
   h_hadrons->GetXaxis()->SetBinLabel(13,"4900213");
-  h_hadrons->GetXaxis()->SetBinLabel(14,"No decay");
+  h_hadrons->GetXaxis()->SetBinLabel(16,"No decay");
   h_hadrons->GetXaxis()->SetBinLabel(15,"Invisible");
-  h_hadrons->GetXaxis()->SetBinLabel(16,"Visible");
+  h_hadrons->GetXaxis()->SetBinLabel(14,"Visible");
 
   TH1D* h_xdxdM = new TH1D("xdxdM", "Dark Quark Invariant Mass; M_{xd,xd} [GeV]",80, 0, 8000);
   TH1D* h_nJetsMatched = new TH1D("nJetsMatched", "N jets satisfying dR(j,xd) < 0.4; nJets", 10, 0, 10);
@@ -240,8 +241,8 @@ int main(int argc, char **argv) {
   TH1D* h_dRxdj1 = new TH1D("dRxdj1", "DeltaR(quark, leading jet); #Delta R", 25,0,5);
   TH1D* h_dRxdj2 = new TH1D("dRxdj2", "DeltaR(quark, subleading jet); #Delta R", 25,0,5);
   TH1D* h_mjj = new TH1D("mjj", "Invariant Mass 2 Closest Jets; M_{jj} [GeV]", 50, 0, 4000);
-  TH1D* h_mT_12 = new TH1D("mT_12", "mT Sum (2 Leading + MET); m_{T} [GeV]", 50, 0, 4600);
-  TH1D* h_mT_jj = new TH1D("mT_jj", "mT Sum (2 Matched Jets + MET); m_{T} [GeV]", 50, 0, 4600);
+  TH1D* h_mT_12 = new TH1D("mT_12", "mT Sum (2 Leading + MET); m_{T} [GeV]", 80, 0, 5000);
+  TH1D* h_mT_jj = new TH1D("mT_jj", "mT Sum (2 Matched Jets + MET); m_{T} [GeV]", 50, 0, 2500);
   TH1D* h_xdj_match_idx = new TH1D("xdj_match_idx", "Index of (matched) Jet Closest To Quark", 10, 0, 10);  
   TH1D* h_xdj_idx = new TH1D("xdj_idx", "Index of (any) Jet Closest To Quark", 15, 0, 15);  
   TH1D* h_dPhi_j_MET = new TH1D("dPhi_j_MET", "#Delta#phi MET and Closest Jet; #Delta#phi(MET,j_{closest})", 20, 0, 3.3);
@@ -250,9 +251,9 @@ int main(int argc, char **argv) {
 
   // Small-R jets
   TH1D* h_nSmallR = new TH1D("nSmallR", "nJets (Small-R); N_{jets}", 15, 0, 15);
-  TH1D* h_jetPt = new TH1D("JetPt","Jet Pt (Small-R); p_{T} [GeV]",80,0,2000.);
-  TH1D* h_jetEta = new TH1D("JetEta","Jet Eta (Small-R); #eta",50,-5.,5.);
-  TH1D* h_jetPhi = new TH1D("JetPhi","Jet Phi (Small-R); #phi",50,-3.14,3.14);
+  TH1D* h_jetPt = new TH1D("JetPt","Leading Jet Pt (Small-R); p_{T} [GeV]",80,0,1000.);
+  TH1D* h_jetEta = new TH1D("JetEta","Leading Jet Eta (Small-R); #eta",50,-5.,5.);
+  TH1D* h_jetPhi = new TH1D("JetPhi","Leading Jet Phi (Small-R); #phi",50,-3.14,3.14);
   TH1D* h_jjdPhi = new TH1D("jjDPhi","#Delta#phi dR Matched Jets (Small-R); #Delta#phi(j,j)", 20, 0, 3.3);
 
   // Large R : pT, tau2, D2
@@ -293,7 +294,8 @@ int main(int argc, char **argv) {
     CHECK_RETRIEVE( smallRJets , "AntiKt4TruthDressedWZJets" )
     CHECK_RETRIEVE( largeRJets , "AntiKt10TruthTrimmedPtFrac5SmallR20Jets" )
     CHECK_RETRIEVE( truthMET , "MET_Truth" )
-    CHECK_RETRIEVE( truthBSM, "TruthBSM" )
+    //CHECK_RETRIEVE( truthBSM, "TruthBSM" )
+    CHECK_RETRIEVE( truthParticles, "TruthParticles" )
 
     //for (size_t n=0;n<nParticleContainers;++n){
     //  CHECK_RETRIEVE( truthParticles[n] , particleKeyList[n].c_str() )
@@ -342,9 +344,9 @@ int main(int argc, char **argv) {
 
     // For MET: NonInt, Int, IntOut, IntMuons
     h_metNonInt->Fill( (*truthMET)["NonInt"]->met()*0.001 );
-    h_metNonInt->Fill( (*truthMET)["Int"]->met()*0.001 );
-    h_metNonInt->Fill( (*truthMET)["IntOut"]->met()*0.001 );
-    h_metNonInt->Fill( (*truthMET)["IntMuons"]->met()*0.001 );
+    //h_metNonInt->Fill( (*truthMET)["Int"]->met()*0.001 );
+    //h_metNonInt->Fill( (*truthMET)["IntOut"]->met()*0.001 );
+    //h_metNonInt->Fill( (*truthMET)["IntMuons"]->met()*0.001 );
     // Truth particles
     //for (size_t n=0;n<nParticleContainers;++n){ // PT and connections for all
     //  for (const auto * p : *truthParticles[n]){
@@ -357,7 +359,7 @@ int main(int argc, char **argv) {
     int n_vis = 0;
     int n_invs = 0;
     float r_inv;
-    for (const auto * bsm: *truthBSM){
+    for (const auto * bsm: *truthParticles){
       if ( fabs(bsm->pdgId()) == 4900101 && bsm->status() == 23){
       /*if ( fabs(bsm->pdgId()) == 4900101){
 	std::cout << "pdgId = " << bsm->pdgId() << ", nParents = " << bsm->nParents() << ", status = " << bsm->status() << " | ";
@@ -388,8 +390,9 @@ int main(int argc, char **argv) {
 	bool visible = false;
         for (size_t n=0; n<bsm->nChildren();n++){
            const xAOD::TruthParticle *c = bsm->child(n); 
-           if (fabs(c->pdgId())< 23){visible = true; /*n_vis++;*/}
-           else if (fabs(c->pdgId()) != 51 && fabs(c->pdgId()) != 53) std::cout << "Unknown child ID " << c->pdgId() << " for hadron " << bsm->pdgId() << std::endl;
+           //if (fabs(c->pdgId())< 23){visible = true; /*n_vis++;*/}
+           //else if (fabs(c->pdgId()) != 51 && fabs(c->pdgId()) != 53) std::cout << "Unknown child ID " << c->pdgId() << " for hadron " << bsm->pdgId() << std::endl;
+	   if (fabs(c->pdgId()) != 51 && fabs(c->pdgId()) != 53) visible = true;
            h_children->Fill(fabs(c->pdgId()));
 	   if (fabs(bsm->pdgId()) == 4900111) h_children_111->Fill(fabs(c->pdgId()));
 	   if (fabs(bsm->pdgId()) == 4900113) h_children_113->Fill(fabs(c->pdgId()));
@@ -406,9 +409,9 @@ int main(int argc, char **argv) {
         if (fabs(bsm->pdgId()) == 4900211) factor = 8;
         if (fabs(bsm->pdgId()) == 4900213) factor = 12;
 	h_hadrons->Fill(factor);
-	if(bsm->nChildren() == 0) h_hadrons->Fill(factor+1);
+	if(bsm->nChildren() == 0) h_hadrons->Fill(factor+3);
 	if(!visible && bsm->nChildren() > 0) h_hadrons->Fill(factor+2);
-	if(visible) h_hadrons->Fill(factor+3);
+	if(visible) h_hadrons->Fill(factor+1);
       }//dark hadron if
     }//bsm loop
     r_inv = (float)n_invs/((float)n_invs+(float)n_vis);
@@ -456,9 +459,9 @@ int main(int argc, char **argv) {
       atleast_2_jets++;
       if (j_idx==0) j1pass = true;
       if (j_idx==1) j2pass = true;
-      h_jetPt->Fill( j->pt()*0.001 );
-      h_jetEta->Fill( j->eta());
-      h_jetPhi->Fill( j->phi());
+      if(j_idx == 0){h_jetPt->Fill( j->pt()*0.001 );
+        h_jetEta->Fill( j->eta());
+        h_jetPhi->Fill( j->phi());}
       TLorentzVector v_j(0,0,0,0);
       v_j.SetPtEtaPhiE(j->pt()*0.001, j->eta(), j->phi(), j->e()*0.001);
 
