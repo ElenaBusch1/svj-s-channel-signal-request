@@ -23,7 +23,7 @@ void Plot_Histograms(string var, vector<TH1D*> hists, vector<string> legend_name
   TLegend *leg;
   //if(var.find("dPhi") != string::npos) leg = new TLegend(0.1,0.1,0.4,0.4);
   //else leg = new TLegend(0.65,0.7,0.95,0.95);
-  leg = new TLegend(0.65,0.7,0.95,0.95);
+  leg = new TLegend(0.58,0.66,0.92,0.92);
   float max = 0;
   gStyle->SetOptStat(0);
 
@@ -31,11 +31,11 @@ void Plot_Histograms(string var, vector<TH1D*> hists, vector<string> legend_name
     //hists[i]->SetLineColor(rainbow[i]);
     hists[i]->SetLineColor(mycolors[i]);
     hists[i]->SetLineWidth(3);
-    //hists[i]->Scale(1./hists[i]->Integral());
+    hists[i]->Scale(1./hists[i]->Integral());
     //hists[i]->GetYaxis()->SetTitle("A.U.");
     if (hists[i]->GetMaximum() > max) max = hists[i]->GetMaximum();
-    leg->AddEntry(hists[i], Form("%s",legend_names[i].c_str()));
-    //leg->AddEntry(hists[i], Form("%s (%i) ",legend_names[i].c_str(), int(hists[i]->GetEntries())));
+    //leg->AddEntry(hists[i], Form("%s",legend_names[i].c_str()));
+    leg->AddEntry(hists[i], Form("%s (%i) ",legend_names[i].c_str(), int(hists[i]->GetEntries())));
     //leg->AddEntry(hists[i], Form("%s; mean = %.2f",legend_names[i].c_str(), hists[i]->GetMean()));
     if (var.find("dR") != string::npos) cout << var << " " << legend_names[i] << " percent dR matched: " << hists[i]->Integral(1,3) << endl;
   }
@@ -45,7 +45,7 @@ void Plot_Histograms(string var, vector<TH1D*> hists, vector<string> legend_name
   }
   if (var != "nSmallR" && var != "nLargeR"  && var != "nJetsMatched") canv->SetLogy();
   leg->Draw();
-  canv->SaveAs(Form("%s/%s_validation.png", save_dir.c_str(), var.c_str()));
+  canv->SaveAs(Form("%s/%s_madgraph.png", save_dir.c_str(), var.c_str()));
   delete canv;
 } 
 
@@ -53,13 +53,14 @@ void myPlotter(){
 
 
   vector<string> my_vars = {
-		"JetPt", //"JetEta", "JetPhi",
+		"Jet2Pt", "Jet2Eta", "Jet2Phi",
+		"JetPt", "JetEta", "JetPhi",
 		//"JetLRPt", "JetLREta", "JetLRPhi", 
 		"MET_NonInt", 
 		"nSmallR", //"nLargeR"
 		"xdPt", //"xdM", "xdPhi", "xdEta",
 		"xdxdM",
-		"xdDPhi", "jjDPhi",
+		"xdDPhi", "jjDPhi", "dEta12", "dPhi12",
 		//"zpPt", "zpM", "zpPhi", "zpEta"
 		"mT_jj", "mT_12", "mjj",
                 //"dR_MET", "dR_aMET",
@@ -68,7 +69,7 @@ void myPlotter(){
                 "r_inv", "hadrons",
 		"dPhi_xdj_MET", "dPhi_xd_MET", "dPhi_j_MET",
 		"xdj_idx", "xdj_match_idx" //"dRxdj", "nJetsMatched"
-
+		
 		};
 
 
@@ -90,13 +91,20 @@ void myPlotter(){
 		//"hists_output_6500_2_zp.root"
 		//"hists_output_7000_2.root"
 		//"hists_output_7000_8.root"
-		"hists_snowmass58_750_2.root",
+		//"hists_CKK_2500_2.root",
+		"hists_madgraph_2500_2.root",
+		"hists_lhe3_2500_2.root",
+		//"hists_MLM_2500_2.root",
+		//"hists_lhe3_2500_8.root",
+		//"hists_MLM_2500_8.root",
+		//"hists_MLM2_2500_2.root",
 		//"hists_cms_750_2.root",
-		"hists_snowmass58_750_8.root",
+		//"hists_CKKnj_2500_2.root",
+		//"hists_MLMnj_2500_2.root",
 		//"hists_cms_750_8.root",
-		"hists_snowmass58_4000_2.root",
+		//"hists_snowmass58_4000_2.root",
 		//"hists_cms_4000_2.root"
-		"hists_snowmass58_4000_8.root",
+		//"hists_snowmass58_4000_8.root",
 		};
   
 
@@ -111,16 +119,20 @@ void myPlotter(){
   //vector<string> legend_names = {"Extra Jets", "No Extra Jets"};
   
   vector<string> legend_names = {
-		"M_{Z'}=750 GeV | r_{inv}=0.2",
-		"M_{Z'}=750 GeV | r_{inv}=0.8",
 		//"M_{Z'}=1500 GeV | r_{inv}=0.2",
 		//"M_{Z'}=1500 GeV | r_{inv}=0.8",
-		//"M_{Z'}=2500 GeV | r_{inv}=0.2",
-		//"M_{Z'}=2500 GeV | r_{inv}=0.8",
+		//"CKK M_{Z'}=2500 GeV | r_{inv}=0.8",
+		"NEW M_{Z'}=2500 GeV | r_{inv}=0.2",
+		"OLD M_{Z'}=2500 GeV | r_{inv}=0.2",
+		//"NEW M_{Z'}=2500 GeV | r_{inv}=0.8",
+		//"OLD M_{Z'}=2500 GeV | r_{inv}=0.8",
+		//"nJetsMax=-1 M_{Z'}=2500 GeV | r_{inv}=0.8",
+		//"None M_{Z'}=2500 GeV | r_{inv}=0.8",
+		//"NJ2 M_{Z'}=2500 GeV | r_{inv}=0.2",
 		//"M_{Z'}=3500 GeV | r_{inv}=0.2",
 		//"M_{Z'}=3500 GeV | r_{inv}=0.8",
-		"M_{Z'}=4000 GeV | r_{inv}=0.2",
-		"M_{Z'}=4000 GeV | r_{inv}=0.8",
+		//"M_{Z'}=4000 GeV | r_{inv}=0.2",
+		//"M_{Z'}=4000 GeV | r_{inv}=0.8",
 		//"M_{Z'}=4500 GeV | r_{inv}=0.2",
 		//"M_{Z'}=5000 GeV | r_{inv}=0.2",
 		//"M_{Z'}=5500 GeV | r_{inv}=0.2",

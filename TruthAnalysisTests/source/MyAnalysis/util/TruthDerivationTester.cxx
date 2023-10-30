@@ -251,10 +251,15 @@ int main(int argc, char **argv) {
 
   // Small-R jets
   TH1D* h_nSmallR = new TH1D("nSmallR", "nJets (Small-R); N_{jets}", 15, 0, 15);
-  TH1D* h_jetPt = new TH1D("JetPt","Leading Jet Pt (Small-R); p_{T} [GeV]",80,0,1000.);
+  TH1D* h_jetPt = new TH1D("JetPt","Leading Jet Pt (Small-R); p_{T} [GeV]",80,0.,2000.);
   TH1D* h_jetEta = new TH1D("JetEta","Leading Jet Eta (Small-R); #eta",50,-5.,5.);
   TH1D* h_jetPhi = new TH1D("JetPhi","Leading Jet Phi (Small-R); #phi",50,-3.14,3.14);
+  TH1D* h_jet2Pt = new TH1D("Jet2Pt","Subleading Jet Pt (Small-R); p_{T} [GeV]",80,0.,2000.);
+  TH1D* h_jet2Eta = new TH1D("Jet2Eta","Subleading Jet Eta (Small-R); #eta",50,-5.,5.);
+  TH1D* h_jet2Phi = new TH1D("Jet2Phi","Subleading Jet Phi (Small-R); #phi",50,-3.14,3.14);
   TH1D* h_jjdPhi = new TH1D("jjDPhi","#Delta#phi dR Matched Jets (Small-R); #Delta#phi(j,j)", 20, 0, 3.3);
+  TH1D* h_dEta12 = new TH1D("dEta12","#Delta#eta Leading Jets (Small-R); #Delta#eta(j_1,j_2)", 20, 0, 3.0);
+  TH1D* h_dPhi12 = new TH1D("dPhi12","#Delta#phi Leading Jets (Small-R); #Delta#phi(j_1,j_2)", 20, 0, 3.3);
 
   // Large R : pT, tau2, D2
   TH1D* h_nLargeR = new TH1D("nLargeR", "nJets (Large-R); N_{jets}", 10, 0, 10);
@@ -424,7 +429,7 @@ int main(int argc, char **argv) {
     //h_nSmallR->Fill(smallRJets->size());
     int nSmallR = 0;
     for (const auto * j : *smallRJets){
-      if (j->pt() > 100000 && fabs(j->eta()) < 2.5) nSmallR++;
+      if (j->pt() > 30000 && fabs(j->eta()) < 2.8) nSmallR++;
     }
     h_nSmallR->Fill(nSmallR);
 
@@ -462,6 +467,9 @@ int main(int argc, char **argv) {
       if(j_idx == 0){h_jetPt->Fill( j->pt()*0.001 );
         h_jetEta->Fill( j->eta());
         h_jetPhi->Fill( j->phi());}
+      if(j_idx == 1){h_jet2Pt->Fill( j->pt()*0.001 );
+        h_jet2Eta->Fill( j->eta());
+        h_jet2Phi->Fill( j->phi());}
       TLorentzVector v_j(0,0,0,0);
       v_j.SetPtEtaPhiE(j->pt()*0.001, j->eta(), j->phi(), j->e()*0.001);
 
@@ -500,6 +508,10 @@ int main(int argc, char **argv) {
     // Check dR MET aligned, MET anti-aligned
     h_dR_MET->Fill( std::min(j_MET.DeltaR(quarks[0]), j_aMET.DeltaR(quarks[1])) );
     h_dR_aMET->Fill( std::min(j_aMET.DeltaR(quarks[0]), j_aMET.DeltaR(quarks[1])) );
+
+    // dEta & dPhi leading jets
+    h_dEta12->Fill( fabs(j1.Eta() - j2.Eta()) );
+    h_dPhi12->Fill( fabs(j1.DeltaPhi(j2)) ) ;
 
     // Find angle between dark quark and MET;
     if(fabs(v_met.DeltaPhi(quarks[0])) < fabs(v_met.DeltaPhi(quarks[1]))) h_dPhi_xd_MET->Fill(fabs(v_met.DeltaPhi(quarks[0])));
@@ -593,7 +605,12 @@ int main(int argc, char **argv) {
   h_jetPt->Write();
   h_jetEta->Write();
   h_jetPhi->Write();
+  h_jet2Pt->Write();
+  h_jet2Eta->Write();
+  h_jet2Phi->Write();
   h_jjdPhi->Write();
+  h_dEta12->Write();
+  h_dPhi12->Write();
 
   h_jetLRPt->Write();
   h_jetLREta->Write();

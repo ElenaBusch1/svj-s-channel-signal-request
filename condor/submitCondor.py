@@ -86,6 +86,12 @@ d_args ={
 ,100055:"mc.MGPy8EG_SVJSChan2j_3000_10.py"
 ,100056:"mc.MGPy8EG_SVJSChan2j_5000_0.py"
 ,100057:"mc.MGPy8EG_SVJSChan2j_5000_10.py"
+,515593:"mc.MGPy8EG_SVJSChan2j_2500_2.py"
+,515596:"mc.MGPy8EG_SVJSChan2j_2500_8.py"
+,515603:"mc.MGPy8EG_SVJSChan2j_2500_2.py"
+,515606:"mc.MGPy8EG_SVJSChan2j_2500_8.py"
+,515613:"mc.MGPy8EG_SVJSChan2j_2500_2.py"
+,515616:"mc.MGPy8EG_SVJSChan2j_2500_8.py"
 }
 
 #-------------------------------------------------------------------------
@@ -94,8 +100,8 @@ if __name__ == "__main__":
 
    n_events = 10000 #10000
 
-   for i in [34]:  
-   #for i in range(0,58):  #88
+   #for i in [603,606,613,616]:  
+   for i in range(8,14):  #88
      numName = '1000'
      if i < 10: numName += '0'+str(i)
      else: numName += str(i)
@@ -125,6 +131,7 @@ if __name__ == "__main__":
      #os.system("echo 'sampledir = /nevis/xenia/data/users/jgonski/xbb/Xbb_merged_samples/0121_PCJKDL1r' >> submit.sub")
      os.system("echo 'workdir = /afs/cern.ch/work/e/ebusch/public/SVJ/signal_request' >> submit.sub")
      os.system("echo 'transfer_input_files = $(workdir)/condor/condor_evnt.sh, $(workdir)/"+numName+"/"+d_args[int(numName)]+"' >> submit.sub")
+     os.system("echo 'transfer_output_files = log.generate, DAOD_TRUTH1."+numName+".root' >> submit.sub")
      os.system("echo 'queue arguments from args.txt' >> submit.sub")
 
      os.system("condor_submit submit.sub")

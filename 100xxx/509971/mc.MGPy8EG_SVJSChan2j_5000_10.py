@@ -1,4 +1,5 @@
 from MadGraphControl.MadGraphUtils import *
+import MadGraphControl.MadGraph_NNPDF30NLO_Base_Fragment
 import re
 import math, cmath
 import os
@@ -54,22 +55,21 @@ my_process = """
 import model  DMsimp_s_spin1_SVJ
 define j = g u c d b s u~ c~ d~ b~ s~ 
 generate p p > xd xd~
-generate p p > xd xd~ j
-generate p p > xd xd~ j j
+add process p p > xd xd~ j
+add process p p > xd xd~ j j
 output -f
 """
 
 process_dir = new_process(my_process)
 runName='run_01'
 
-run_settings = {'lhe_version':'2.0',
+run_settings = {'lhe_version':'3.0',
           'cut_decays':'F',
-	  'ickkw'        : 0,
+	  'ickkw'        : 1,
           'drjj'         : 0.0,
           'maxjetflavor' : 5,
-          'xqcut'        : 0.0,
-          'ktdurham'     : 30,
-          'dparameter'   : 0.4,
+          'xqcut'        : 30.0,
+          'alpsfact'	 : 1.0,
           'nevents'      : int(nevents)
           }
 
@@ -114,18 +114,16 @@ evgenConfig.contact  = ['ebusch@cern.ch']
 evgenConfig.process = "p p --> xd xd~ j j"
 evgenConfig.specialConfig = "NonInteractingPDGCodes=[-51,51,-52,52,-53,53]"
 
-PYTHIA8_nJetMax=2
-PYTHIA8_Process='pp>xdxd~'
-PYTHIA8_Dparameter=run_settings['dparameter']
-PYTHIA8_TMS=run_settings['ktdurham']
-PYTHIA8_nQuarksMerge=run_settings['maxjetflavor']
-
 ###Pythia8 commands
 include("Pythia8_i/Pythia8_A14_NNPDF23LO_EvtGen_Common.py")
 include("Pythia8_i/Pythia8_MadGraph.py")
-include("Pythia8_i/Pythia8_CKKWL_kTMerge.py")
 
-genSeq.Pythia8.Commands+=["Merging:doKTMerging=on"]
+genSeq.Pythia8.Commands+=["JetMatching:merge = on"]
+genSeq.Pythia8.Commands+=["JetMatching:scheme = 1"]
+genSeq.Pythia8.Commands+=["JetMatching:setMad = on"]
+genSeq.Pythia8.Commands+=["JetMatching:nJetMax = 2"]
+genSeq.Pythia8.Commands+=["JetMatching:coneRadius = 0.4"]
+genSeq.Pythia8.Commands+=["JetMatching:etaJetMax = 2.5"]
 
 genSeq.Pythia8.Commands+=["4900001:m0 = 5000"]
 genSeq.Pythia8.Commands+=["4900002:m0 = 5000"]
@@ -180,5 +178,3 @@ genSeq.Pythia8.Commands+=["4900213:addchannel = 1 {0}  91 -2 2".format((1-Rinv)/
 genSeq.Pythia8.Commands+=["4900213:addchannel = 1 {0}  91 -3 3".format((1-Rinv)/5)]
 genSeq.Pythia8.Commands+=["4900213:addchannel = 1 {0}  91 -4 4".format((1-Rinv)/5)]
 genSeq.Pythia8.Commands+=["4900213:addchannel = 1 {0}  91 -5 5".format((1-Rinv)/5)]
-
-genSeq.Pythia8.Commands+=["Merging:mayRemoveDecayProducts=on"] 

@@ -20,17 +20,17 @@ cp mc*.py $RUN_NUMBER
 echo "GENERATING..."
 echo "Contents of DSID folder: "
 ls $RUN_NUMBER
-asetup AthGeneration,21.6.96
-echo "Gen_tf.py --ecmEnergy=13000. --firstEvent=1  --maxEvents=$N_EVENTS --randomSeed=111 --jobConfig=$RUN_NUMBER --outputEVNTFile=$RUN_NUMBER$STREND"
-Gen_tf.py --ecmEnergy=13000. --firstEvent=1  --maxEvents=$N_EVENTS --randomSeed=111 --jobConfig=$RUN_NUMBER --outputEVNTFile=$RUN_NUMBER$STREND > $RUN_NUMBER/log.generate
+asetup AthGeneration,21.6.105
+echo "Gen_tf.py --ecmEnergy=13000. --firstEvent=1  --maxEvents=$N_EVENTS --randomSeed=111 --jobConfig=$RUN_NUMBER --outputEVNTFile=EVNT.$RUN_NUMBER$STREND"
+Gen_tf.py --ecmEnergy=13000. --firstEvent=1  --maxEvents=$N_EVENTS --randomSeed=111 --jobConfig=$RUN_NUMBER --outputEVNTFile=EVNT.$RUN_NUMBER$STREND > $RUN_NUMBER/log.generate
 )
 
 #2 make the TRUTH DAOD 
-#(
-#echo "GETTING TRUTH DAOD..."
-#asetup AthDerivation,21.2.132.0
-#Reco_tf.py --inputEVNTFile $RUN_NUMBER$STREND --outputDAODFile $RUN_NUMBER$STREND --reductionConf TRUTH1
-#)
+(
+echo "GETTING TRUTH DAOD..."
+asetup AthDerivation,21.2.132.0
+Reco_tf.py --inputEVNTFile EVNT.$RUN_NUMBER$STREND --outputDAODFile $RUN_NUMBER$STREND --reductionConf TRUTH1
+)
 
 ##3 make the histogram file
 #(
