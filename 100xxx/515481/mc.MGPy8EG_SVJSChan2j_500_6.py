@@ -4,7 +4,7 @@ import re
 import math, cmath
 import os
 
-nevents = runArgs.maxEvents*6.5 if runArgs.maxEvents>0 else 6.5*evgenConfig.nEventsPerJob
+nevents = runArgs.maxEvents*1.5 if runArgs.maxEvents>0 else 1.5*evgenConfig.nEventsPerJob
 
 bonus_file = open('pdg_extras.dat','w')
 #  The most important number is the first: the PDGID of the particle

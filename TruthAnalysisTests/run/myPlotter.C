@@ -45,7 +45,7 @@ void Plot_Histograms(string var, vector<TH1D*> hists, vector<string> legend_name
   }
   if (var != "nSmallR" && var != "nLargeR"  && var != "nJetsMatched") canv->SetLogy();
   leg->Draw();
-  canv->SaveAs(Form("%s/%s_madgraph.png", save_dir.c_str(), var.c_str()));
+  canv->SaveAs(Form("%s/%s_scale.png", save_dir.c_str(), var.c_str()));
   delete canv;
 } 
 
@@ -92,10 +92,12 @@ void myPlotter(){
 		//"hists_output_7000_2.root"
 		//"hists_output_7000_8.root"
 		//"hists_CKK_2500_2.root",
-		"hists_madgraph_2500_2.root",
+		//"hists_madgraph_2500_2.root",
+		"hists_scale1p5_2500_2.root",
 		"hists_lhe3_2500_2.root",
 		//"hists_MLM_2500_2.root",
-		//"hists_lhe3_2500_8.root",
+		"hists_scale1p5_2500_8.root",
+		"hists_lhe3_2500_8.root",
 		//"hists_MLM_2500_8.root",
 		//"hists_MLM2_2500_2.root",
 		//"hists_cms_750_2.root",
@@ -124,8 +126,8 @@ void myPlotter(){
 		//"CKK M_{Z'}=2500 GeV | r_{inv}=0.8",
 		"NEW M_{Z'}=2500 GeV | r_{inv}=0.2",
 		"OLD M_{Z'}=2500 GeV | r_{inv}=0.2",
-		//"NEW M_{Z'}=2500 GeV | r_{inv}=0.8",
-		//"OLD M_{Z'}=2500 GeV | r_{inv}=0.8",
+		"NEW M_{Z'}=2500 GeV | r_{inv}=0.8",
+		"OLD M_{Z'}=2500 GeV | r_{inv}=0.8",
 		//"nJetsMax=-1 M_{Z'}=2500 GeV | r_{inv}=0.8",
 		//"None M_{Z'}=2500 GeV | r_{inv}=0.8",
 		//"NJ2 M_{Z'}=2500 GeV | r_{inv}=0.2",

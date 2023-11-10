@@ -20,7 +20,7 @@ cp mc*.py $RUN_NUMBER
 echo "GENERATING..."
 echo "Contents of DSID folder: "
 ls $RUN_NUMBER
-asetup AthGeneration,21.6.105
+asetup AthGeneration,21.6.96
 echo "Gen_tf.py --ecmEnergy=13000. --firstEvent=1  --maxEvents=$N_EVENTS --randomSeed=111 --jobConfig=$RUN_NUMBER --outputEVNTFile=EVNT.$RUN_NUMBER$STREND"
 Gen_tf.py --ecmEnergy=13000. --firstEvent=1  --maxEvents=$N_EVENTS --randomSeed=111 --jobConfig=$RUN_NUMBER --outputEVNTFile=EVNT.$RUN_NUMBER$STREND > $RUN_NUMBER/log.generate
 )

@@ -86,6 +86,14 @@ d_args ={
 ,100055:"mc.MGPy8EG_SVJSChan2j_3000_10.py"
 ,100056:"mc.MGPy8EG_SVJSChan2j_5000_0.py"
 ,100057:"mc.MGPy8EG_SVJSChan2j_5000_10.py"
+,515519:"mc.MGPy8EG_SVJSChan2j_5000_2.py"
+,515520:"mc.MGPy8EG_SVJSChan2j_5000_4.py"
+,515521:"mc.MGPy8EG_SVJSChan2j_5000_6.py"
+,515522:"mc.MGPy8EG_SVJSChan2j_5000_8.py"
+,515523:"mc.MGPy8EG_SVJSChan2j_6000_2.py"
+,515524:"mc.MGPy8EG_SVJSChan2j_6000_4.py"
+,515525:"mc.MGPy8EG_SVJSChan2j_6000_6.py"
+,515526:"mc.MGPy8EG_SVJSChan2j_6000_8.py"
 ,515593:"mc.MGPy8EG_SVJSChan2j_2500_2.py"
 ,515596:"mc.MGPy8EG_SVJSChan2j_2500_8.py"
 ,515603:"mc.MGPy8EG_SVJSChan2j_2500_2.py"
@@ -101,7 +109,7 @@ if __name__ == "__main__":
    n_events = 10000 #10000
 
    #for i in [603,606,613,616]:  
-   for i in range(8,14):  #88
+   for i in range(0,58):  #88
      numName = '1000'
      if i < 10: numName += '0'+str(i)
      else: numName += str(i)
